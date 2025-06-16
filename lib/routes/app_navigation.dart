@@ -5,8 +5,12 @@ import 'package:pdi_deme/views/screens/bottom_navigation_screen.dart';
 import 'package:pdi_deme/views/screens/history_screen.dart';
 import 'package:pdi_deme/views/screens/home_screen.dart';
 import 'package:pdi_deme/views/screens/login_screen.dart';
+import 'package:pdi_deme/views/screens/panier_screen.dart';
 import 'package:pdi_deme/views/screens/pdi_profil_screen.dart';
+import 'package:pdi_deme/views/screens/pin_code_screen.dart';
 import 'package:pdi_deme/views/screens/profile_screen.dart';
+import 'package:pdi_deme/views/screens/recap_panier_screen.dart';
+import 'package:pdi_deme/views/screens/retrait_success.dart';
 import 'package:pdi_deme/views/screens/scan_error_screen.dart';
 import 'package:pdi_deme/views/screens/scanner_screen.dart';
 import 'package:pdi_deme/views/screens/splash_screen.dart';
@@ -32,7 +36,7 @@ class AppNavigation {
       transition: Transition.rightToLeftWithFade,
       transitionDuration: Duration(milliseconds: 500),
     ),
-      GetPage(
+    GetPage(
       name: AppRoutes.errorScan,
       page: () => ErrorScanScreen(),
       transition: Transition.rightToLeftWithFade,
@@ -72,6 +76,30 @@ class AppNavigation {
       name: AppRoutes.pdiProfile,
       page: () => const PdiProfileScreen(),
       transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.panier,
+      page: () => const PanierScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.recapPanier,
+      page: () => const RecapitulatifScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.pin,
+      page: () => const PinCodeScreen(),
+      transition: Transition.topLevel,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.retraitSuccess,
+      page: () => const RetraitSuccessScreen(),
+      transition: Transition.rightToLeftWithFade,
       transitionDuration: Duration(milliseconds: 500),
     ),
   ];

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pdi_deme/api/models/panier_model.dart';
 import 'package:pdi_deme/constant/app_color.dart';
+import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
 
 class PdiProfileScreen extends StatelessWidget {
@@ -72,7 +75,6 @@ class PdiProfileScreen extends StatelessWidget {
                     value1: 'Kadiogo',
                     label2: 'Sexe',
                     value2: 'Masculin',
-                    
                   ),
                   _buildInfoRow(
                     label1: 'Type de document',
@@ -91,7 +93,28 @@ class PdiProfileScreen extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: CustomElevatedButonWithIcons(
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(
+                AppRoutes.panier,
+                arguments: [
+                  PanierProduitModel(
+                    id: 1,
+                    libelle: "1 sac de riz 25 kg",
+                    quantite: 10,
+                  ),
+                  PanierProduitModel(
+                    id: 2,
+                    libelle: "1 sac de riz 25 kg",
+                    quantite: 10,
+                  ),
+                  PanierProduitModel(
+                    id: 3,
+                    libelle: "1 sac de riz 25 kg",
+                    quantite: 10,
+                  ),
+                ], // Passer la liste des produits sélectionnés
+              );
+            },
             backgroundColor: AppColors.primary,
             label: 'Voire le panier',
             icon: Icons.shopping_cart_outlined,

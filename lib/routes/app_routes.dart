@@ -9,6 +9,10 @@ class AppRoutes {
   static const String scan = '/qrcode-scan';
   static const String otpVerify = '/otp-verify';
   static const String errorScan = '/error-scan';
+  static const String panier = '/panier';
+  static const String recapPanier = '/recap-panier';
+  static const String pin = '/pin';
+  static const String retraitSuccess = '/retrait-success';
   
   
 }

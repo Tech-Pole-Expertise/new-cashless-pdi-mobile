@@ -84,14 +84,17 @@ class _ScannerScreenState extends State<ScannerScreen> {
     }
     try {
       final data = jsonDecode(rawData);
+      Logger().d('Données scannées : $data');
       if (data is Map<String, dynamic> && data.containsKey('email')) {
         showDialog(
           context: context,
           builder:
-              (_) => CustomCircleProgressBar(
-                color: AppColors.primary,
-                backgroundColor: Colors.white,
-                strokeWidth: 3,
+              (_) => Center(
+                child: CustomCircleProgressBar(
+                  color: AppColors.primary,
+                  backgroundColor: Colors.white,
+                  strokeWidth: 3,
+                ),
               ),
         );
         await Future.delayed(Duration(seconds: 2)); // simulation de chargement
@@ -105,9 +108,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
         );
       }
     } catch (e) {
+      Logger().e('Erreur lors du scan : $e');
+
       Get.toNamed(
         AppRoutes.errorScan,
-        arguments: {'message': 'Erreur de décodage JSON : ${e.toString()}'},
+        arguments: {'message': 'Un problème est survenu lors du scan'},
       );
     } finally {
       isProcessing = false;
