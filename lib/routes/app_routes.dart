@@ -13,6 +13,12 @@ class AppRoutes {
   static const String recapPanier = '/recap-panier';
   static const String pin = '/pin';
   static const String retraitSuccess = '/retrait-success';
+  static const String forgotPassword = '/forgot-password';
+  static const String resetPassword = '/reset-password';
+  static const String changePassword = '/change-password';
+  static const String updateProfil = '/update-profil';
+  static const String successPage = '/success-page';
+  static const String confirmPin = '/confirm-pin';
   
   
 }

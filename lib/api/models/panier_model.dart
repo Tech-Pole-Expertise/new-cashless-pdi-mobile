@@ -20,4 +20,13 @@ class PanierProduitModel {
       quantite: json['quantite'],
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'libelle': libelle,
+      'quantite': quantite,
+      'isSelected': isSelected,
+      'retrait': retrait,
+    };
+  }
 }

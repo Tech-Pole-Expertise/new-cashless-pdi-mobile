@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get/get.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pdi_deme/views/widget/custom_otp_field.dart';
 import 'package:pdi_deme/views/widget/elevated_button.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
@@ -57,71 +57,53 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Vérification OTP'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Veuillez entrer le code à 6 chiffres reçu sur +226 07297755',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 16),
-            OtpTextField(
-              numberOfFields: 6,
-              borderColor: AppColors.primary,
-              showFieldAsBox: true,
-              onCodeChanged: (String code) {},
-              onSubmit: (String verificationCode) {
-                Get.toNamed(AppRoutes.retraitSuccess);
-                // showDialog(
-                //   context: context,
-                //   builder: (context) {
-                //     return AlertDialog(
-                //       title: Text("Verification Code"),
-                //       content: Text('Code entré : $verificationCode'),
-                //     );
-                //   },
-                // );
-              },
-            ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: SizedBox(
-                width: Get.width,
-                child: CustomElevatedButton(
-                  label: 'Valider',
-                  onPressed: () {},
-                  backgroundColor: AppColors.primary,
+      body: Column(
+        children: [
+          const SizedBox(height: 24),
+
+          CustomOtpField(
+            numberOfFields: 6,
+            onCodeChanged: (String code) {},
+            onSubmit:
+                (code) => Get.toNamed(
+                  AppRoutes.pin,
+                  arguments: {'code': code, 'phone': '+226 07297755'},
                 ),
+          ),
+
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: SizedBox(
+              width: Get.width,
+              child: CustomElevatedButton(
+                label: 'Valider',
+                onPressed: () {},
+                backgroundColor: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  remainingSeconds > 0
-                      ? Text(
-                        'OTP expire dans $remainingSeconds secondes',
-                        style: TextStyle(color: AppColors.textSecondary),
-                      )
-                      : InkWell(
-                        onTap: onResendPressed,
-                        child: Text(
-                          'Renvoyer maintenant',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+          ),
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
+                remainingSeconds > 0
+                    ? Text(
+                      'OTP expire dans $remainingSeconds secondes',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    )
+                    : InkWell(
+                      onTap: onResendPressed,
+                      child: Text(
+                        'Renvoyer maintenant',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-            ),
-          ],
-        ),
+                    ),
+          ),
+        ],
       ),
     );
   }

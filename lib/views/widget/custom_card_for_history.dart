@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 
 class CustomTableForHistory extends StatelessWidget {
   final List<Map<String, dynamic>> data;
-  const CustomTableForHistory({super.key, required this.data});
+   CustomTableForHistory({super.key, required this.data});
+  final Logger logger = Logger();
 
   @override
   Widget build(BuildContext context) {
@@ -36,25 +38,27 @@ class CustomTableForHistory extends StatelessWidget {
                       DataCell(
                         Text(item['cardNumber']),
                         onTap: () {
-                          print('Le cardNumber est : ${item['cardNumber']}');
+                          logger.d('Le cardNumber est : ${item['cardNumber']}');
                         },
                       ),
                       DataCell(
                         Text(item['clientName']),
                         onTap: () {
-                          print('Le nom du client est : ${item['clientName']}');
+                          logger.d(
+                            'Le nom du client est : ${item['clientName']}',
+                          );
                         },
                       ),
                       DataCell(
                         Text(item['date']),
                         onTap: () {
-                          print('La date est : ${item['date']}');
+                          logger.d('La date est : ${item['date']}');
                         },
                       ),
                       DataCell(
                         Text(item['montant']),
                         onTap: () {
-                          print('Le montant est : ${item['montant']}');
+                          logger.d('Le montant est : ${item['montant']}');
                         },
                       ),
                     ],

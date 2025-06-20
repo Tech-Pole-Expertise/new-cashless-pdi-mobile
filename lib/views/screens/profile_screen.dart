@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pdi_deme/constant/app_color.dart';
+import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
 import 'package:pdi_deme/views/widget/list_tile.dart';
 
@@ -132,6 +134,7 @@ class ProfileScreen extends StatelessWidget {
           child: CustomElevatedButonWithIcons(
             onPressed: () {
               // Déconnexion
+              Get.offAllNamed(AppRoutes.login);
             },
             backgroundColor: AppColors.error,
             label: 'Deconnexion',

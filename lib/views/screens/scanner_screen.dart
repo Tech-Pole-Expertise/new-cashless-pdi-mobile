@@ -85,7 +85,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     try {
       final data = jsonDecode(rawData);
       Logger().d('Données scannées : $data');
-      if (data is Map<String, dynamic> && data.containsKey('email')) {
+      if (data is Map<String, dynamic> && data.containsKey('identifier')) {
         showDialog(
           context: context,
           builder:
@@ -104,7 +104,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       } else {
         Get.toNamed(
           AppRoutes.errorScan,
-          arguments: {'message': 'Format invalide : email non trouvé'},
+          arguments: {'message': 'Format invalide : QrCode non pris en charge'},
         );
       }
     } catch (e) {

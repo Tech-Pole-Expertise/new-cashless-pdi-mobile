@@ -4,14 +4,14 @@ import 'package:logger/web.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 
-class PinCodeScreen extends StatefulWidget {
-  const PinCodeScreen({super.key});
+class ConfirmPinScreen extends StatefulWidget {
+  const ConfirmPinScreen({super.key});
 
   @override
-  State<PinCodeScreen> createState() => _PinCodeScreenState();
+  State<ConfirmPinScreen> createState() => _ConfirmPinScreenState();
 }
 
-class _PinCodeScreenState extends State<PinCodeScreen> {
+class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
   final logger = Logger();
   String enteredPin = "";
   final int pinLength = 4;
@@ -32,10 +32,6 @@ class _PinCodeScreenState extends State<PinCodeScreen> {
 
   String get title {
     switch (action) {
-      case 'transaction':
-        return 'Confirmer la transaction';
-      case 'update':
-        return 'Créer un nouveau PIN';
       case 'confirmUpdate':
         return 'Confirmer le nouveau PIN';
       default:
@@ -51,19 +47,9 @@ class _PinCodeScreenState extends State<PinCodeScreen> {
         }
       } else if (value == 'validate') {
         if (enteredPin.length == pinLength) {
-          logger.d("PIN entré: $enteredPin");
+          logger.d("PIN entré: \$enteredPin");
 
           switch (action) {
-            case 'transaction':
-              Get.offAllNamed(AppRoutes.retraitSuccess);
-              break;
-            case 'update':
-              Get.toNamed(
-                AppRoutes.confirmPin,
-                arguments: {'action': 'confirmUpdate', 'firstPin': enteredPin},
-              );
-
-              break;
             case 'confirmUpdate':
               if (firstPin == enteredPin) {
                 Get.offAllNamed(
@@ -76,12 +62,15 @@ class _PinCodeScreenState extends State<PinCodeScreen> {
                   },
                 );
               } else {
-                Get.snackbar('Erreur', 'Le code PIN ne correspond pas');
+                Get.snackbar(
+                  'Erreur',
+                  'Les deux codes PIN ne correspondent pas',
+                );
                 enteredPin = '';
               }
               break;
             default:
-              logger.w("Action non reconnue: $action");
+              logger.w("Action non reconnue: \$action");
           }
         }
       } else {

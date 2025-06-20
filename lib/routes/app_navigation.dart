@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/screens/bottom_navigation_screen.dart';
+import 'package:pdi_deme/views/screens/confirm_pin_screen.dart';
+import 'package:pdi_deme/views/screens/forgot_password_screen.dart';
 import 'package:pdi_deme/views/screens/history_screen.dart';
 import 'package:pdi_deme/views/screens/home_screen.dart';
 import 'package:pdi_deme/views/screens/login_screen.dart';
@@ -14,6 +16,7 @@ import 'package:pdi_deme/views/screens/retrait_success.dart';
 import 'package:pdi_deme/views/screens/scan_error_screen.dart';
 import 'package:pdi_deme/views/screens/scanner_screen.dart';
 import 'package:pdi_deme/views/screens/splash_screen.dart';
+import 'package:pdi_deme/views/screens/success_screen.dart';
 import 'package:pdi_deme/views/screens/verify_otp_screen.dart';
 
 class AppNavigation {
@@ -99,6 +102,30 @@ class AppNavigation {
     GetPage(
       name: AppRoutes.retraitSuccess,
       page: () => const RetraitSuccessScreen(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => ForgotPasswordScreen(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.resetPassword,
+      page: () => PinCodeScreen(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.successPage,
+      page: () => SuccessScreen(),
+      transition: Transition.rightToLeftWithFade,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.confirmPin,
+      page: () => ConfirmPinScreen(),
       transition: Transition.rightToLeftWithFade,
       transitionDuration: Duration(milliseconds: 500),
     ),
