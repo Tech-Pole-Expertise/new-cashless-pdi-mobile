@@ -58,7 +58,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                     'message': 'PIN mis à jour avec succès',
                     'title': 'Succès',
                     'icon': Icons.check_circle_outline,
-                    'nextRoute': AppRoutes.home,
+                    'nextRoute': AppRoutes.bottom,
                   },
                 );
               } else {

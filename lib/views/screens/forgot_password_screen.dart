@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/custom_bottom_sheet.dart';
@@ -11,8 +12,40 @@ class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final ApiController apiController = Get.find<ApiController>();
+
   @override
   Widget build(BuildContext context) {
+    Future<void> onSubmit() async {
+      final request = await apiController.initPasswordReset({
+        "phone": "+226${phoneController.text}",
+      });
+      if (request) {
+        CustomBottomSheet.show(
+          context: context,
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomOtpField(
+                  text:
+                      'Veuillez entrer le code OTP réçu sur le  +22${phoneController.text}',
+                  numberOfFields: 6,
+                  onCodeChanged: (String code) {
+                    // Logique de validation du code ici
+                  },
+                  onSubmit: (code) {
+                    Get.toNamed(AppRoutes.changePassword, arguments: 'reset');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
 
@@ -129,38 +162,15 @@ class ForgotPasswordScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 30),
-                    CustomElevatedButton(
-                      label: 'Vérifier le numéro',
-                      onPressed: () {
-                        CustomBottomSheet.show(
-                          context: context,
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CustomOtpField(
-                                  numberOfFields: 6,
-                                  onCodeChanged: (String code) {
-                                    // Logique de validation du code ici
-                                  },
-                                  onSubmit: (code) {
-                                    Get.toNamed(
-                                      AppRoutes.pin,
-                                      arguments: {
-                                        'action': 'update', // ou 'change'
-                                        'phone': phoneController.text,
-                                        'code': code,
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      backgroundColor: AppColors.primary,
+                    Obx(
+                      () => CustomElevatedButton(
+                        isLoading: apiController.isLoading.value,
+                        label: 'Vérifier le numéro',
+                        onPressed: () {
+                          onSubmit();
+                        },
+                        backgroundColor: AppColors.primary,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Align(

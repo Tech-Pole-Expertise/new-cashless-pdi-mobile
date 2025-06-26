@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/list_notifier.dart';
+import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/custom_text_field.dart';
@@ -8,9 +11,18 @@ import 'package:pdi_deme/views/widget/elevated_button.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final TextEditingController cardNumberController = TextEditingController();
+  final ApiController apiController = Get.find<ApiController>();
+  final GlobalKey<FormState> _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    final merchantController = Get.find<MerchantController>();
+    final merchant = merchantController.merchant.value;
+    if (merchant == null) {
+      return const Scaffold(
+        body: Center(child: Text('Aucune donnée utilisateur trouvée')),
+      );
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Accueil'), centerTitle: true),
       body: Padding(
@@ -23,22 +35,33 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/img/profile.png'),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage:
+                          (merchant.photoUrl != null &&
+                                  merchant.photoUrl!.isNotEmpty)
+                              ? NetworkImage(merchant.photoUrl!)
+                              : const AssetImage(
+                                    'assets/img/defaut_profil.jpeg',
+                                  )
+                                  as ImageProvider,
+                    ),
                   ),
+
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Stephane Deme',
+                        '${merchant.firstName} ${merchant.lastName}',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('+226 70 00 00 00', style: TextStyle(fontSize: 16)),
+                      Text(merchant.username, style: TextStyle(fontSize: 16)),
                     ],
                   ),
                 ],
@@ -78,35 +101,38 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomTextField(
-                      controller: cardNumberController,
-                      label: 'Numéro de la carte',
-                      isPassword: false,
-                      maxLength: 24,
-                      hint: 'Entrez le numéro de la carte',
-                      keyboardType: TextInputType.number,
+                  Form(
+                    key: _key,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomTextField(
+                        controller: cardNumberController,
+                        label: 'Numéro de la carte',
+                        isPassword: false,
+                        maxLength: 24,
+                        hint: 'Entrez le numéro de la carte',
+                        keyboardType: TextInputType.number,
 
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          Get.toNamed(AppRoutes.scan);
-                        },
-                        icon: Icon(Icons.qr_code_scanner),
-                      ),
-                      prefixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(width: 8),
-                          Icon(Icons.credit_card),
-                          const Text(
-                            'No : ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            Get.toNamed(AppRoutes.scan);
+                          },
+                          icon: Icon(Icons.qr_code_scanner),
+                        ),
+                        prefixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(width: 8),
+                            Icon(Icons.credit_card),
+                            const Text(
+                              'No : ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -114,13 +140,18 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            CustomElevatedButton(
-              label: 'Valider',
-              onPressed: () {
-                // Get.toNamed(AppRoutes.otpVerify, arguments: {'time': 60});
-                Get.toNamed(AppRoutes.pdiProfile);
-              },
-              backgroundColor: AppColors.primary,
+            Obx(
+              () => CustomElevatedButton(
+                label: 'Valider',
+                isLoading: apiController.isLoading.value,
+                onPressed: () {
+                  if (!_key.currentState!.validate()) {
+                    
+                  }
+                  apiController.getPdiProfile(cardNumberController.text);
+                },
+                backgroundColor: AppColors.primary,
+              ),
             ),
           ],
         ),

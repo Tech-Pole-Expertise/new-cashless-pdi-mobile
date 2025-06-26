@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/api/models/panier_model.dart';
+import 'package:pdi_deme/api/models/retrait_product_model.dart';
 import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
 
 class RecapitulatifScreen extends StatelessWidget {
@@ -10,9 +12,12 @@ class RecapitulatifScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<PanierProduitModel> produitsSelectionnes =
-        Get.arguments ?? []; // Récupération avec GetX
+    final ApiController apiController = Get.find<ApiController>();
 
+    final args = Get.arguments;
+    final List<PanierProduitModel> produitsSelectionnes =
+        args['produits'] ?? []; // Récupération avec GetX
+    final identifier = args['identifier'];
     final int totalRetrait = produitsSelectionnes.fold(
       0,
       (somme, item) =>
@@ -38,7 +43,7 @@ class RecapitulatifScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final produit = produitsSelectionnes[index];
                   return ListTile(
-                    title: Text(produit.libelle),
+                    title: Text('${produit.label} de ${produit.poids}'),
                     subtitle: Text("Quantité initiale : ${produit.quantite}"),
                     trailing: Text(
                       "Retrait : ${produit.retrait}",
@@ -70,7 +75,15 @@ class RecapitulatifScreen extends StatelessWidget {
                 label: "Valider le retrait",
                 icon: Icons.check_circle,
                 onPressed: () {
-                  Get.toNamed(AppRoutes.otpVerify,arguments: {'time': 60});
+                  List<RetraitProductModel> retraitList =
+                      produitsSelectionnes
+                          .map((produit) => produit.toRetraitModel())
+                          .toList();
+                  Logger().d('Produits : ${retraitList.first.toJson()}');
+                  apiController.initWithdraw({
+                    'identifier': identifier,
+                    'produits': retraitList,
+                  });
                 },
               ),
             ),

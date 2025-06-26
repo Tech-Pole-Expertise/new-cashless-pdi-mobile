@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/custom_circle_progress_bar.dart';
@@ -23,6 +24,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   bool isFlashOn = false;
   bool isProcessing = false;
   QRViewController? controller;
+  final ApiController apiController = Get.find<ApiController>();
   @override
   void initState() {
     super.initState();
@@ -89,7 +91,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
         showDialog(
           context: context,
           builder:
-              (_) => Center(
+              (_) =>  Center(
                 child: CustomCircleProgressBar(
                   color: AppColors.primary,
                   backgroundColor: Colors.white,
@@ -97,10 +99,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 ),
               ),
         );
-        await Future.delayed(Duration(seconds: 2)); // simulation de chargement
+        apiController.getPdiProfile(data['identifier']);
 
-        Get.back(); // ferme le loading
-        Get.toNamed(AppRoutes.pdiProfile, arguments: data);
+
       } else {
         Get.toNamed(
           AppRoutes.errorScan,

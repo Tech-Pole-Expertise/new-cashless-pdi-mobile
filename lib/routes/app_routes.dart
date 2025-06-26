@@ -18,7 +18,7 @@ class AppRoutes {
   static const String changePassword = '/change-password';
   static const String updateProfil = '/update-profil';
   static const String successPage = '/success-page';
+  static const String changePhone = '/change-phone';
   static const String confirmPin = '/confirm-pin';
-  
-  
+  static const String apiError = '/error-or-success-page';
 }

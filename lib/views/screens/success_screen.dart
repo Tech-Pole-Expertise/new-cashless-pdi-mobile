@@ -10,12 +10,12 @@ class SuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = Get.arguments ?? {};
     final String title = args['title'] ?? "Succès !";
-    final String message = args['message'] ?? "Opération effectuée avec succès.";
+    final String message =
+        args['message'] ?? "Opération effectuée avec succès.";
     final IconData icon = args['icon'] ?? Icons.check_circle_outline;
     final String? nextRoute = args['nextRoute']; // facultatif
 
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -27,7 +27,7 @@ class SuccessScreen extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
@@ -36,12 +36,15 @@ class SuccessScreen extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 30),
               CustomElevatedButonWithIcons(
                 backgroundColor: AppColors.primary,
-                label: 'Continuer',
+                label: 'Terminer',
                 icon: Icons.arrow_forward,
                 onPressed: () {
                   if (nextRoute != null) {

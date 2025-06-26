@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomBottomSheet  {
- 
-static void show({
+class CustomBottomSheet {
+  static void show({
     required BuildContext context,
     required Widget child,
     double? height,
@@ -11,6 +10,7 @@ static void show({
     showModalBottomSheet(
       context: context,
       isDismissible: isDismissible,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
@@ -24,5 +24,4 @@ static void show({
       },
     );
   }
- 
 }

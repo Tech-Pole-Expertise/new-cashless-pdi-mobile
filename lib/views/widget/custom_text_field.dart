@@ -11,6 +11,9 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final int? maxLines;
   final int? maxLength;
+  final String? regexPattern;
+  final String? validationMessage;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -24,6 +27,9 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines,
     this.maxLength,
+    this.regexPattern,
+    this.validationMessage,
+    this.validator,
   });
 
   @override
@@ -39,6 +45,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
     _obscureText = widget.isPassword;
   }
 
+  String? _defaultValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Ce champ est requis';
+    }
+
+    if (widget.regexPattern != null) {
+      final regex = RegExp(widget.regexPattern!);
+      if (!regex.hasMatch(value)) {
+        return widget.validationMessage ?? 'Format invalide';
+      }
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -48,23 +69,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
       readOnly: widget.isReadOnly,
       maxLines: widget.maxLines ?? 1,
       maxLength: widget.maxLength ?? 100,
+      validator: widget.validator ?? _defaultValidator,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
         prefixIcon: widget.prefixIcon,
-        suffixIcon:
-            widget.isPassword
-                ? IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                )
-                : widget.suffixIcon,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : widget.suffixIcon,
         border: const OutlineInputBorder(),
       ),
     );

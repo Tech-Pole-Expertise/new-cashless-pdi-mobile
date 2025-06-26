@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/Service/merchand_data_store_provider.dart';
+import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final MerchandDataStore merchandDataStore = MerchandDataStore();
+@override
+void initState() {
+  super.initState();
+  
+  final merchantController = Get.find<MerchantController>();
+
+  // Charge immédiatement le merchant depuis le stockage
+  merchantController.loadMerchant();
+
+  Future.delayed(const Duration(seconds: 5), () {
+    Logger().d('merchantController: ${merchantController.merchant.value?.token}');
+    if (merchantController.merchant.value != null) {
+      Get.offAllNamed(AppRoutes.bottom);
+    } else {
+      Get.offAllNamed(AppRoutes.login);
+    }
+  });
+}
+
+
+  @override
   Widget build(BuildContext context) {
-    // Simulate a delay for loading resources
-    Future.delayed(const Duration(seconds: 3), () {
-      // Navigate to the next screen after the delay
-      Get.offAllNamed(
-        AppRoutes.login,
-      ); // Replace '/home' with your actual home route
-    });
     return Scaffold(
       appBar: AppBar(backgroundColor: AppColors.primary, elevation: 0),
       backgroundColor: AppColors.primary,
@@ -24,9 +46,8 @@ class SplashScreen extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.topRight,
-              child: Container(
+              child: SizedBox(
                 width: 175,
-                decoration: BoxDecoration(),
                 child: Image.asset('assets/img/phone.png', fit: BoxFit.cover),
               ),
             ),
@@ -37,11 +58,10 @@ class SplashScreen extends StatelessWidget {
                     text: 'Pdi ',
                     style: TextStyle(
                       fontSize: 35,
-
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondary,
                     ),
-                    children: <TextSpan>[
+                    children: [
                       TextSpan(
                         text: 'Deme',
                         style: TextStyle(
@@ -65,28 +85,16 @@ class SplashScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Container(
-                //   child: Lottie.asset(
-                //     'assets/animations/loader.json',
-                //     height: 130,
-                //     width: 150,
-                //     fit: BoxFit.fill,
-                //     repeat: true,
-                //     animate: true,
-                //   ),
-                // ),
               ],
             ),
             Align(
               alignment: Alignment.bottomLeft,
-              child: Container(
+              child: SizedBox(
                 width: 125,
-                decoration: BoxDecoration(),
                 child: Image.asset('assets/img/panier.png', fit: BoxFit.cover),
               ),
             ),
-
-            Text(
+            const Text(
               'Copyright ©  Tech Pôle Expertise 2025. All Rights Reserved',
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),

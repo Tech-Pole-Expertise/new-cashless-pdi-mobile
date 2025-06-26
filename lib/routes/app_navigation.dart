@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pdi_deme/views/screens/api_error_screen.dart';
 import 'package:pdi_deme/views/screens/bottom_navigation_screen.dart';
-import 'package:pdi_deme/views/screens/confirm_pin_screen.dart';
+import 'package:pdi_deme/views/screens/change_password_screen.dart';
+import 'package:pdi_deme/views/screens/change_phone_number_screen.dart';
 import 'package:pdi_deme/views/screens/forgot_password_screen.dart';
 import 'package:pdi_deme/views/screens/history_screen.dart';
 import 'package:pdi_deme/views/screens/home_screen.dart';
@@ -23,7 +25,7 @@ class AppNavigation {
   static final routes = [
     GetPage(
       name: AppRoutes.splash,
-      page: () => const SplashScreen(),
+      page: () => SplashScreen(),
       transition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 600),
     ),
@@ -59,7 +61,7 @@ class AppNavigation {
     ),
     GetPage(
       name: AppRoutes.profile,
-      page: () => const ProfileScreen(),
+      page: () => ProfileScreen(),
       transition: Transition.downToUp,
       transitionDuration: Duration(milliseconds: 400),
     ),
@@ -89,13 +91,13 @@ class AppNavigation {
     ),
     GetPage(
       name: AppRoutes.recapPanier,
-      page: () => const RecapitulatifScreen(),
+      page: () =>  RecapitulatifScreen(),
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 500),
     ),
     GetPage(
-      name: AppRoutes.pin,
-      page: () => const PinCodeScreen(),
+      name: AppRoutes.changePassword,
+      page: () => const ChangePasswordScreen(),
       transition: Transition.topLevel,
       transitionDuration: Duration(milliseconds: 500),
     ),
@@ -123,11 +125,17 @@ class AppNavigation {
       transition: Transition.rightToLeftWithFade,
       transitionDuration: Duration(milliseconds: 500),
     ),
+
     GetPage(
-      name: AppRoutes.confirmPin,
-      page: () => ConfirmPinScreen(),
+      name: AppRoutes.apiError,
+      page: () => ApiErrorScreen(),
       transition: Transition.rightToLeftWithFade,
       transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: AppRoutes.changePhone,
+      transition: Transition.rightToLeftWithFade,
+      page: () => ChangePhoneScreen(),
     ),
   ];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdi_deme/api/models/panier_model.dart';
+import 'package:logger/web.dart';
+import 'package:pdi_deme/api/models/pdi_model.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
@@ -10,6 +11,7 @@ class PdiProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PdiModel pdiModel = Get.arguments as PdiModel;
     return Scaffold(
       appBar: AppBar(title: Text('Informations du profil'), centerTitle: true),
       body: SafeArea(
@@ -41,20 +43,31 @@ class PdiProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage('assets/img/pdi-show.png'),
+                        backgroundImage:
+                            (pdiModel.photoUrl != null &&
+                                    pdiModel.photoUrl!.isNotEmpty)
+                                ? NetworkImage(pdiModel.photoUrl!)
+                                : const AssetImage(
+                                      'assets/img/defaut_profil.jpeg',
+                                    )
+                                    as ImageProvider,
                       ),
                     ),
+
                     Text(
-                      'ZONGO Hassim',
+                      '${pdiModel.firstname} ${pdiModel.lastname.toUpperCase()}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('+226 76 34 15 32', style: TextStyle(fontSize: 12)),
+                    Text(
+                      '+226 ${pdiModel.phone}',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
               ),
@@ -66,21 +79,21 @@ class PdiProfileScreen extends StatelessWidget {
                 children: [
                   _buildInfoRow(
                     label1: 'Nom',
-                    value1: 'ZONGO',
+                    value1: pdiModel.lastname.toUpperCase(),
                     label2: 'Prénom',
-                    value2: 'Hassim',
+                    value2: pdiModel.firstname,
                   ),
                   _buildInfoRow(
                     label1: 'Centre',
-                    value1: 'Kadiogo',
+                    value1: pdiModel.userInfos.centre,
                     label2: 'Sexe',
-                    value2: 'Masculin',
+                    value2: pdiModel.userInfos.gender,
                   ),
                   _buildInfoRow(
                     label1: 'Type de document',
-                    value1: 'CNIB',
+                    value1: pdiModel.userInfos.docType,
                     label2: 'No Document',
-                    value2: 'B343598',
+                    value2: pdiModel.userInfos.docNumber,
                   ),
                 ],
               ),
@@ -94,25 +107,14 @@ class PdiProfileScreen extends StatelessWidget {
           width: double.infinity,
           child: CustomElevatedButonWithIcons(
             onPressed: () {
+              Logger().i('possessions: ${pdiModel.possessions}');
               Get.toNamed(
                 AppRoutes.panier,
-                arguments: [
-                  PanierProduitModel(
-                    id: 1,
-                    libelle: "1 sac de riz 25 kg",
-                    quantite: 10,
-                  ),
-                  PanierProduitModel(
-                    id: 2,
-                    libelle: "1 sac de riz 25 kg",
-                    quantite: 10,
-                  ),
-                  PanierProduitModel(
-                    id: 3,
-                    libelle: "1 sac de riz 25 kg",
-                    quantite: 10,
-                  ),
-                ], // Passer la liste des produits sélectionnés
+                arguments: {
+                  'possessions': pdiModel.possessions,
+                  'pdi': pdiModel,
+                }, // Passer le modèle PDI
+                // Passer la liste des produits sélectionnés
               );
             },
             backgroundColor: AppColors.primary,
