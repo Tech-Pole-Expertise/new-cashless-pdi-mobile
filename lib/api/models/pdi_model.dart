@@ -20,7 +20,7 @@ class PdiModel {
     required this.phone,
     
     required this.isPdi,
-    required this.photoUrl,
+     this.photoUrl,
     required this.possessions,
     required this.userInfos,
   });

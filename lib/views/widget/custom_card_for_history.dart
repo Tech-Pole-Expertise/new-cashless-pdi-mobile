@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/models/retrait_history_model.dart'; // Assure-toi d'importer le bon fichier
 import 'package:pdi_deme/constant/app_color.dart';
 
 class CustomTableForHistory extends StatelessWidget {
-  final List<Map<String, dynamic>> data;
-   CustomTableForHistory({super.key, required this.data});
+  final List<RetraitHistoryModel> data;
   final Logger logger = Logger();
+  final void Function(RetraitHistoryModel)? onRowTap;
+
+  CustomTableForHistory({super.key, required this.data, this.onRowTap});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +20,7 @@ class CustomTableForHistory extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              'Juin 2023',
+              'Juin 2025',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -29,39 +32,32 @@ class CustomTableForHistory extends StatelessWidget {
               DataColumn(label: Text('N° Carte')),
               DataColumn(label: Text('Client')),
               DataColumn(label: Text('Date')),
-              DataColumn(label: Text('Montant')),
+              DataColumn(label: Text('Quantité')),
             ],
             rows:
                 data.map((item) {
                   return DataRow(
                     cells: [
                       DataCell(
-                        Text(item['cardNumber']),
-                        onTap: () {
-                          logger.d('Le cardNumber est : ${item['cardNumber']}');
-                        },
+                        Text(item.identifier),
+                        onTap: () => onRowTap?.call(item),
                       ),
                       DataCell(
-                        Text(item['clientName']),
-                        onTap: () {
-                          logger.d(
-                            'Le nom du client est : ${item['clientName']}',
-                          );
-                        },
+                        Text(item.clientName),
+                        onTap: () => onRowTap?.call(item),
                       ),
                       DataCell(
-                        Text(item['date']),
-                        onTap: () {
-                          logger.d('La date est : ${item['date']}');
-                        },
+                        Text(
+                          item.date.timeZoneName,
+                        ), // juste la date sans l'heure
+                        onTap: () => onRowTap?.call(item),
                       ),
                       DataCell(
-                        Text(item['montant']),
-                        onTap: () {
-                          logger.d('Le montant est : ${item['montant']}');
-                        },
+                        Text('${item.produits.length}P'),
+                        onTap: () => onRowTap?.call(item),
                       ),
                     ],
+                    onSelectChanged: (_) => onRowTap?.call(item),
                   );
                 }).toList(),
           ),
@@ -69,21 +65,4 @@ class CustomTableForHistory extends StatelessWidget {
       ),
     );
   }
-
-  // Exemple de fonction pour afficher les détails, par exemple via un dialog
-  // void showDetails(MyItem item) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: Text('Détails'),
-  //       content: Text('Nom : ${item.name}\nÂge : ${item.age}'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Fermer'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

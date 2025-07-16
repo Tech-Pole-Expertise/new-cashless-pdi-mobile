@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/custom_text_field.dart';
 import 'package:pdi_deme/views/widget/elevated_button.dart';
 // à adapter
@@ -24,19 +23,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      Get.offAllNamed(
-        AppRoutes.successPage,
-        arguments: {
-          'title': 'Gestion de mot de passe',
-          'message': 'Opération réussi avec succès!',
-          'nextRoute': AppRoutes.login,
-        },
-      );
-    }
-  }
-
   @override
   void dispose() {
     newPasswordController.dispose();
@@ -46,15 +32,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String action = Get.arguments as String;
-    bool isForPasswordChange() {
-      return action == 'reset' ? false : true;
+    final args = Get.arguments;
+    final String action = args['operationType'] as String;
+
+    void submit() async {
+      if (_formKey.currentState!.validate()) {
+        action.toString() == 'reset'
+            ? await apiController.confirmPasswordReset({
+              "new_password": newPasswordController.text,
+            })
+            : await apiController.confirmPasswordChange({
+              "new_password": newPasswordController.text,
+            });
+      }
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isForPasswordChange()
+          action.toString() != 'reset'
               ? "Changer le mot de passe"
               : "Rénitialiser le mot de passe",
         ),
@@ -63,14 +59,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
               Center(
                 child: Icon(
-                  isForPasswordChange() ? Icons.lock_outline : Icons.restore,
+                  action.toString() != 'reset'
+                      ? Icons.lock_outline
+                      : Icons.restore,
                   size: 48,
                   color: AppColors.primary,
                 ),
@@ -133,9 +131,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               const SizedBox(height: 32),
               Obx(
                 () => CustomElevatedButton(
-                  label: isForPasswordChange() ? 'Changer' : 'Rénitialiser',
+                  label:
+                      action.toString() != 'reset' ? 'Changer' : 'Rénitialiser',
+                  labelColor: Colors.yellow,
                   isLoading: apiController.isLoading.value,
-                  onPressed: _submit,
+                  onPressed: submit,
                   backgroundColor: AppColors.primary,
                 ),
               ),

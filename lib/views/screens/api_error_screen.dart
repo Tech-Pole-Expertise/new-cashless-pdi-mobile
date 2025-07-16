@@ -10,9 +10,10 @@ class ApiErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = Get.arguments as Map<String, dynamic>?;
 
-    final String title = args?['title'] ?? 'Erreur API';
-    final String message = args?['message'] ?? 'Une erreur inattendue est survenue.';
-    final VoidCallback? onRetry = args?['onRetry']; // optionnel
+    final int statusCode = args?['status_code'] ?? 0;
+    final VoidCallback? onRetry = args?['onRetry'];
+
+    final errorContent = _getErrorContent(statusCode, args);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -22,14 +23,10 @@ class ApiErrorScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.cloud_off,
-                color: AppColors.error,
-                size: 100,
-              ),
+              Icon(errorContent['icon'], color: AppColors.error, size: 100),
               const SizedBox(height: 20),
               Text(
-                title,
+                errorContent['title'],
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -38,7 +35,7 @@ class ApiErrorScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                message,
+                errorContent['message'],
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
@@ -63,5 +60,64 @@ class ApiErrorScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Map<String, dynamic> _getErrorContent(
+    int statusCode,
+    Map<String, dynamic>? args,
+  ) {
+    switch (statusCode) {
+      case 400:
+        return {
+          'icon': Icons.warning_amber_rounded,
+          'title': 'Opération échouée',
+          'message':
+              args?['message'] ??
+              'Veuillez vérifier les informations envoyées.',
+        };
+      case 401:
+        return {
+          'icon': Icons.lock_outline,
+          'title': 'Non autorisé',
+          'message':
+              args?['message'] ??
+              'Vous devez être connecté pour accéder à cette ressource.',
+        };
+      case 403:
+        return {
+          'icon': Icons.block,
+          'title': 'Accès refusé',
+          'message':
+              args?['message'] ??
+              'Vous n\'avez pas la permission d\'effectuer cette action.',
+        };
+      case 404:
+        return {
+          'icon': Icons.search_off,
+          'title': 'Ressource introuvable',
+          'message': args?['message'] ?? 'La ressource demandée n\'existe pas.',
+        };
+      case 500:
+        return {
+          'icon': Icons.error,
+          'title': 'Erreur serveur',
+          'message':
+              args?['message'] ??
+              'Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.',
+        };
+      case -1: // Cas pour aucune connexion internet
+        return {
+          'icon': Icons.wifi_off,
+          'title': 'Pas de connexion',
+          'message':
+              args?['message'] ?? 'Veuillez vérifier votre connexion Internet.',
+        };
+      default:
+        return {
+          'icon': Icons.warning,
+          'title': args?['title'] ?? 'Erreur inconnue',
+          'message': args?['message'] ?? 'Une erreur inattendue est survenue.',
+        };
+    }
   }
 }

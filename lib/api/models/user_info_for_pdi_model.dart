@@ -1,31 +1,34 @@
 import 'category_model.dart'; // à adapter selon ton chemin
 
 class UserInfosModel {
-  final String birthdate;
-  final String gender;
+  final String? birthdate;
+  final String? gender;
   final String centre;
-  final String docType;
-  final String docNumber;
+  final String? docType;
+  final String? docNumber;
   final CategoryModel category;
 
   UserInfosModel({
-    required this.birthdate,
-    required this.gender,
+     this.birthdate,
+     this.gender,
     required this.centre,
-    required this.docType,
-    required this.docNumber,
+     this.docType,
+     this.docNumber,
     required this.category,
   });
 
   factory UserInfosModel.fromJson(Map<String, dynamic> json) {
     return UserInfosModel(
-      birthdate: json['birthdate'],
-      gender: json['gender'],
-      centre: json['centre_pdi'],
-      docType: json['document_type'],
-      docNumber: json['document_number'],
+      birthdate: json['birthdate']??'Non précisé',
+      gender: json['gender'] ??'Non précisé',
+      centre: json['centre_pdi']??'Non précisé',
+      docType: json['document_type']??'Non précisé',
+      docNumber: json['document_number'] ?? 'Non précisé',
 
-      category: CategoryModel.fromJson(json['category']),
+      category: json['category'] != null
+    ? CategoryModel.fromJson(json['category'])
+    : CategoryModel.empty(),
+
     );
   }
 

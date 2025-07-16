@@ -5,6 +5,8 @@ import 'package:pdi_deme/api/Service/merchand_data_store_provider.dart';
 import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pdi_deme/views/widget/custom_circle_progress_bar.dart';
+import 'package:pdi_deme/views/widget/elevated_button.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,88 +17,83 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final MerchandDataStore merchandDataStore = MerchandDataStore();
-@override
-void initState() {
-  super.initState();
-  
-  final merchantController = Get.find<MerchantController>();
+  final MerchantController merchantController = Get.find<MerchantController>();
+  bool isLoading = true;
+  bool showStartButton = false;
 
-  // Charge immédiatement le merchant depuis le stockage
-  merchantController.loadMerchant();
+  @override
+  void initState() {
+    super.initState();
+    _loadMerchantAndRedirect();
+  }
 
-  Future.delayed(const Duration(seconds: 5), () {
-    Logger().d('merchantController: ${merchantController.merchant.value?.token}');
-    if (merchantController.merchant.value != null) {
+  Future<void> _loadMerchantAndRedirect() async {
+    merchantController.loadMerchant();
+
+    await Future.delayed(const Duration(seconds: 3));
+
+    final merchant = merchantController.merchant.value;
+
+    if (merchant != null) {
+      Logger().d('Merchant found: ${merchant.token}');
       Get.offAllNamed(AppRoutes.bottom);
     } else {
-      Get.offAllNamed(AppRoutes.login);
+      Logger().d('No merchant found');
+      setState(() {
+        isLoading = false;
+        showStartButton = true;
+      });
     }
-  });
-}
+  }
 
+  void handleStart() {
+    Get.offAllNamed(AppRoutes.login);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: AppColors.primary, elevation: 0),
       backgroundColor: AppColors.primary,
-      body: SafeArea(
+      body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: SizedBox(
-                width: 175,
-                child: Image.asset('assets/img/phone.png', fit: BoxFit.cover),
+            const Spacer(flex: 1), // 🔼 plus petit => logo monte
+            // Logo plus haut
+            Image.asset('assets/img/logo.png'),
+
+            const Spacer(flex: 5), // 🔽 plus grand => bouton descend
+            // Bouton ou loader
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              child:
+                  isLoading
+                      ? CustomCircleProgressBar(
+                        color: Colors.white,
+                        backgroundColor: AppColors.primary,
+                        strokeWidth: 5,
+                      )
+                      : showStartButton
+                      ? CustomElevatedButton(
+                        label: 'Commencer',
+                        labelColor: AppColors.primary,
+                        onPressed: handleStart,
+                        backgroundColor: AppColors.secondary,
+                      )
+                      : const SizedBox(),
+            ),
+
+            const Spacer(flex: 2), // garde espace en bas
+            // Texte collé en bas
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Copyright © Tech Pôle Expertise 2025. All Rights Reserved',
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+                textAlign: TextAlign.center,
               ),
-            ),
-            Column(
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Pdi ',
-                    style: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondary,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Deme',
-                        style: TextStyle(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: AppColors.secondary,
-                      strokeWidth: 5,
-                      backgroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: SizedBox(
-                width: 125,
-                child: Image.asset('assets/img/panier.png', fit: BoxFit.cover),
-              ),
-            ),
-            const Text(
-              'Copyright ©  Tech Pôle Expertise 2025. All Rights Reserved',
-              style: TextStyle(color: Colors.white, fontSize: 12),
             ),
           ],
         ),

@@ -16,67 +16,16 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 250,
-                    width: double.infinity,
-                    child: Image.asset(
-                      'assets/img/users.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary.withAlpha((0.8 * 255).toInt()),
-                            AppColors.primary.withAlpha((0.2 * 255).toInt()),
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 32.0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          SizedBox(height: 40),
-                          Text(
-                            'Bienvenue sur\nCashless !',
-                            style: TextStyle(
-                              color: AppColors.secondary,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'SIMPLE ET RAPIDE',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: Image.asset('assets/img/users.png', fit: BoxFit.cover),
               ),
 
               // Partie formulaire scrollable
@@ -84,12 +33,12 @@ class LoginScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(18.0),
                 child: Form(
                   key: formkey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode: AutovalidateMode.onUnfocus,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Authentification',
+                        'Se connecter',
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -103,52 +52,45 @@ class LoginScreen extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
+
                       const SizedBox(height: 20),
                       CustomTextField(
                         controller: phoneController,
                         label: 'Numéro de téléphone',
-                        maxLength: 8,
                         regexPattern: r'^\d{8}$',
                         validationMessage:
                             'Veuillez entrer un numéro de téléphone valide.',
-                        hint: '56 78 90 12',
+                        hint: '7X XX XX XX',
                         keyboardType: TextInputType.phone,
+                        prefixIcon: Icon(
+                          Icons.phone,
+                        ), // facultatif, pour être clair
+                        suffixIcon: null,
+                        formatAsPhoneNumber: true,
 
-                        prefixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(width: 8),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                'assets/img/drapeau.png',
-                                height: 20,
-                                width: 20,
-                              ),
+                        // Utilise prefix à la place
+                        prefix: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Text(
+                            '+226',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                            const Text(
-                              '+226',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
                       CustomTextField(
                         controller: passwordController,
                         label: 'Mot de passe',
-                        maxLength: 12,
-
+                        prefixIcon: Icon(Icons.lock),
                         // regexPattern: r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$',
                         // validationMessage: 'Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.',
                         isPassword: true,
-                        hint: 'Entrez votre mot de passe',
+                        hint: '********',
                         keyboardType: TextInputType.text,
-                        prefixIcon: const Icon(Icons.lock),
                       ),
                       const SizedBox(height: 10),
                       Align(
@@ -162,22 +104,28 @@ class LoginScreen extends StatelessWidget {
                             style: TextStyle(
                               color: AppColors.primary,
                               fontSize: 14,
+                              decorationColor: AppColors.primary,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 30),
                       Obx(
                         () => CustomElevatedButton(
                           label: 'Se connecter',
+                          labelColor: Colors.yellow,
                           isLoading: apiController.isLoading.value,
                           onPressed: () {
                             if (formkey.currentState!.validate()) {
                               Logger().d(
-                                'phone:' '+226${phoneController.text}',
+                                'phone:'
+                                '+226${phoneController.text}',
                               );
                               apiController.login({
-                                'username': '+226${phoneController.text}',
+                                'username':
+                                    '+226${phoneController.text.replaceAll(' ', '').trim()}',
                                 'password': passwordController.text,
                               });
                             }

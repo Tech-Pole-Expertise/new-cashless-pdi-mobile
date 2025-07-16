@@ -6,6 +6,8 @@ import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_navigation.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +15,7 @@ void main() async {
   final merchantController = Get.put(MerchantController(), permanent: true);
   merchantController.loadMerchant();
   Get.put(ApiController());
+  
   runApp(const MyApp());
 }
 
@@ -23,6 +26,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'PDI Deme',
+         localizationsDelegates: const [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+  supportedLocales: const [
+    Locale('fr', 'FR'),
+  ],
+  locale: const Locale('fr', 'FR'),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
       ),

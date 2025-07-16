@@ -9,8 +9,16 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      code: json['code'],
-      label: json['label'],
+      code: json['code'] ?? 'unknown',
+      label: json['label'] ?? 'Non précisé',
+    );
+  }
+
+  /// ✅ Constructeur vide par défaut
+  factory CategoryModel.empty() {
+    return CategoryModel(
+      code: 'unknown',
+      label: 'Non précisé',
     );
   }
 

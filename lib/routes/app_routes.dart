@@ -21,4 +21,7 @@ class AppRoutes {
   static const String changePhone = '/change-phone';
   static const String confirmPin = '/confirm-pin';
   static const String apiError = '/error-or-success-page';
+  static const String marchandStocks = '/merchand-stock';
+  static const String otpVerifyForPassword = '/otp-verify-for-password';
+   static const String updatePassword = '/update-password';
 }

@@ -31,6 +31,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomOtpField(
+                operationType: 'change',
                 text:
                     'Veuillez entrer le code OTP réçu sur le  +22${newPhoneController.text}',
                 numberOfFields: 6,
@@ -101,7 +102,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
               CustomTextField(
                 controller: newPhoneController,
                 label: 'Nouveau numéro',
-                maxLength: 8,
+                
                 regexPattern: r'^\d{8}$',
                 validationMessage:
                     'Veuillez entrer un numéro de téléphone valide.',
@@ -135,7 +136,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
                 label: "Confirmer le numéro",
                 controller: confirmPhoneController,
                 keyboardType: TextInputType.phone,
-                maxLength: 8,
+               
                 regexPattern: r'^\d{8}$',
                 validationMessage:
                     'Veuillez entrer un numéro de téléphone valide.',

@@ -85,15 +85,15 @@ class PdiProfileScreen extends StatelessWidget {
                   ),
                   _buildInfoRow(
                     label1: 'Centre',
-                    value1: pdiModel.userInfos.centre,
+                    value1: pdiModel.userInfos.centre!,
                     label2: 'Sexe',
-                    value2: pdiModel.userInfos.gender,
+                    value2: pdiModel.userInfos.gender!,
                   ),
                   _buildInfoRow(
                     label1: 'Type de document',
-                    value1: pdiModel.userInfos.docType,
+                    value1: pdiModel.userInfos.docType!,
                     label2: 'No Document',
-                    value2: pdiModel.userInfos.docNumber,
+                    value2: pdiModel.userInfos.docNumber!,
                   ),
                 ],
               ),
@@ -118,7 +118,7 @@ class PdiProfileScreen extends StatelessWidget {
               );
             },
             backgroundColor: AppColors.primary,
-            label: 'Voire le panier',
+            label: 'Voir son panier',
             icon: Icons.shopping_cart_outlined,
           ),
         ),

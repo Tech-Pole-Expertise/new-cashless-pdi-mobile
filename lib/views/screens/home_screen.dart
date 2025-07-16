@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/list_notifier.dart';
-import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pdi_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
@@ -13,149 +12,366 @@ class HomeScreen extends StatelessWidget {
   final TextEditingController cardNumberController = TextEditingController();
   final ApiController apiController = Get.find<ApiController>();
   final GlobalKey<FormState> _key = GlobalKey();
+  final homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
-    final merchantController = Get.find<MerchantController>();
-    final merchant = merchantController.merchant.value;
-    if (merchant == null) {
-      return const Scaffold(
-        body: Center(child: Text('Aucune donnée utilisateur trouvée')),
-      );
-    }
-    return Scaffold(
-      appBar: AppBar(title: const Text('Accueil'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundImage:
-                          (merchant.photoUrl != null &&
-                                  merchant.photoUrl!.isNotEmpty)
-                              ? NetworkImage(merchant.photoUrl!)
-                              : const AssetImage(
-                                    'assets/img/defaut_profil.jpeg',
-                                  )
-                                  as ImageProvider,
-                    ),
-                  ),
+    // final merchantController = Get.find<MerchantController>();
+    // final merchant = merchantController.merchant.value;
+    // final merchantStat = apiController.merchantStat.value;
+    return Obx(() {
+      final merchantStat = apiController.merchantStat.value;
+      //  final merchant = merchantController.merchant.value;
 
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      // Si le chargement est encore en cours
+      if (apiController.isLoading.value) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+
+      // Si le chargement est terminé mais que les données sont nulles
+      if (merchantStat == null) {
+        return const Scaffold(
+          body: Center(
+            child: Text(
+              'Nous avons rencontré un problème lors du chargement des informations.',
+            ),
+          ),
+        );
+      }
+
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Haut : profil utilisateur
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage:
+                          const AssetImage('assets/img/pro.png')
+                              as ImageProvider,
+                      // (merchant.photoUrl != null &&
+                      //         merchant.photoUrl!.isNotEmpty)
+                      //     ? NetworkImage(merchant.photoUrl!)
+                      //     : const AssetImage('assets/img/pro.png')
+                      //         as ImageProvider,
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          merchantStat.phone,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Statistiques customisées comme dans l'image
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green.shade700),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryLight,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.local_shipping,
+                              color: AppColors.primaryLight,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Approvionnement reçu"),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Total: ${merchantStat.supplyCount.toString()}",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Statistiques générales",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Image.asset('assets/img/group.png', height: 40),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.primary),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryLight,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.import_export,
+                              color: AppColors.primaryLight,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Retrait effectués"),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Ce mois: ${merchantStat.withdrawalCount.toString()}",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Statistiques du mois en cours",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Image.asset('assets/img/group.png', height: 40),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+                // Bloc retrait
+                Container(
+                  height: 300,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
                     children: [
-                      Text(
-                        '${merchant.firstName} ${merchant.lastName}',
+                      const Text(
+                        'Veuillez sélectionner\nune méthode de retrait',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(merchant.username, style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: 215,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withAlpha((0.08 * 255).toInt()),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3), // changes position of shadow
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Scannnez manuellement',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Veuillez entrer le numéro de la carte',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Form(
-                    key: _key,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomTextField(
-                        controller: cardNumberController,
-                        label: 'Numéro de la carte',
-                        isPassword: false,
-                        maxLength: 24,
-                        hint: 'Entrez le numéro de la carte',
-                        keyboardType: TextInputType.number,
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // déclenche le formulaire manuel
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (context) {
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom:
+                                        MediaQuery.of(
+                                          context,
+                                        ).viewInsets.bottom,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 24,
+                                    ),
+                                    child: Form(
+                                      key: _key,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "Veuillez saisir le code de la carte du PDI",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          CustomTextField(
+                                            controller: cardNumberController,
+                                            label: 'Numéro de la carte',
+                                            isPassword: false,
+                                            hint: '44 47 56 74',
+                                            keyboardType: TextInputType.number,
+                                            formatAsPhoneNumber: true,
+                                            suffixIcon: IconButton(
+                                              onPressed: () {
+                                                Get.toNamed(AppRoutes.scan);
+                                              },
+                                              icon: const Icon(
+                                                Icons.qr_code_scanner,
+                                              ),
+                                            ),
+                                            prefix: const Padding(
+                                              padding: EdgeInsets.only(
+                                                right: 8.0,
+                                              ),
+                                              child: Text(
+                                                'No',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
 
-                        suffixIcon: IconButton(
+                                          const SizedBox(height: 16),
+                                          Obx(
+                                            () => CustomElevatedButton(
+                                              label: 'Rechercher',
+                                              labelColor: Colors.yellow,
+
+                                              isLoading:
+                                                  apiController.isLoading.value,
+                                              onPressed: () async {
+                                                if (!_key.currentState!
+                                                    .validate())
+                                                  return;
+
+                                                final success =
+                                                    await apiController
+                                                        .getPdiProfile(
+                                                          cardNumberController
+                                                              .text
+                                                              .replaceAll(
+                                                                ' ',
+                                                                '',
+                                                              )
+                                                              .trim(),
+                                                        );
+                                                if (success) {
+                                                  Get.back();
+                                                  Get.toNamed(
+                                                    AppRoutes.panier,
+
+                                                    arguments: {
+                                                      'pdi':
+                                                          apiController
+                                                              .pdiProfile
+                                                              .value,
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              backgroundColor:
+                                                  AppColors.primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[900],
+                            foregroundColor: Colors.yellow,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text("Entrer le numéro de carte"),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
                           onPressed: () {
                             Get.toNamed(AppRoutes.scan);
                           },
-                          icon: Icon(Icons.qr_code_scanner),
-                        ),
-                        prefixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(width: 8),
-                            Icon(Icons.credit_card),
-                            const Text(
-                              'No : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.green[900],
+                            side: BorderSide(color: AppColors.primary),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                          ],
+                          ),
+                          child: const Text("Scanner le QR code"),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Obx(
-              () => CustomElevatedButton(
-                label: 'Valider',
-                isLoading: apiController.isLoading.value,
-                onPressed: () {
-                  if (!_key.currentState!.validate()) {
-                    
-                  }
-                  apiController.getPdiProfile(cardNumberController.text);
-                },
-                backgroundColor: AppColors.primary,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

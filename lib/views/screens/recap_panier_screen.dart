@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/api/models/panier_model.dart';
 import 'package:pdi_deme/api/models/retrait_product_model.dart';
 import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
+import 'package:pdi_deme/views/widget/custom_app_bar.dart';
+import 'package:pdi_deme/views/widget/elevated_button.dart';
 
 class RecapitulatifScreen extends StatelessWidget {
   const RecapitulatifScreen({super.key});
@@ -16,83 +18,205 @@ class RecapitulatifScreen extends StatelessWidget {
 
     final args = Get.arguments;
     final List<PanierProduitModel> produitsSelectionnes =
-        args['produits'] ?? []; // Récupération avec GetX
+        args['produits'] ?? [];
     final identifier = args['identifier'];
+
     final int totalRetrait = produitsSelectionnes.fold(
       0,
       (somme, item) =>
           somme + int.tryParse(item.retrait)!.clamp(0, item.quantite),
     );
 
+    final merchantController = Get.find<MerchantController>();
+    final pdi = apiController.pdiProfile.value;
     return Scaffold(
-      appBar: AppBar(title: const Text('Récapitulatif du panier')),
+      backgroundColor: Colors.white,
+
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(90),
+        child: CustomAppBar(title: 'Recapitilatif'), // ton appbar avec profil
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Récapitulatif des produits pour le retrait",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Text(
+                    '${pdi!.firstname.toUpperCase()} ${pdi.lastname}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    'N°${pdi.identifier}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              // child: Row(
+              //   children: [
+              //     CircleAvatar(
+              //       radius: 25,
+              //       backgroundImage:
+              //           (pdi?.photoUrl != null && pdi!.photoUrl!.isNotEmpty)
+              //               ? NetworkImage(pdi.photoUrl!)
+              //               : const AssetImage('assets/img/pdi.jpeg')
+              //                   as ImageProvider,
+              //     ),
+              //     const SizedBox(width: 16),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           '${pdi!.firstname.toUpperCase()} ${pdi.lastname}',
+              //           style: TextStyle(fontSize: 16),
+              //         ),
+              //         Text(
+              //           pdi.identifier,
+              //           style: const TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: 16,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
+
+            // Liste
             Expanded(
               child: ListView.separated(
                 itemCount: produitsSelectionnes.length,
-                separatorBuilder: (_, __) => const Divider(),
+                separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final produit = produitsSelectionnes[index];
-                  return ListTile(
-                    title: Text('${produit.label} de ${produit.poids}'),
-                    subtitle: Text("Quantité initiale : ${produit.quantite}"),
-                    trailing: Text(
-                      "Retrait : ${produit.retrait}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.primary),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Image.asset(
+                                'assets/img/fruit.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            produit.label,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          produit.retrait,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
             ),
+
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Total à retirer :",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
+            //  Total
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const Text(
+            //       "Total à retirer :",
+            //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            //     ),
+            //     Text(
+            //       "$totalRetrait unités",
+            //       style: const TextStyle(
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.green,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            const SizedBox(height: 20),
+
+            // Bouton principal
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CustomElevatedButton(
+                    label:
+                        apiController.isLoading.value
+                            ? 'Chargement...'
+                            : 'Confirmer le retrait',
+                    labelColor: Colors.white,
+                    onPressed:
+                        apiController.isLoading.value
+                            ? null
+                            : () {
+                              List<RetraitProductModel> retraitList =
+                                  produitsSelectionnes
+                                      .map(
+                                        (produit) => produit.toRetraitModel(),
+                                      )
+                                      .toList();
+
+                              Logger().d({
+                                'identifier': identifier,
+                                'produits':
+                                    retraitList.map((r) => r.toJson()).toList(),
+                              });
+
+                              apiController.initWithdraw({
+                                'identifier': identifier,
+                                'produits':
+                                    retraitList.map((r) => r.toJson()).toList(),
+                              });
+                            },
+                    backgroundColor: AppColors.primary,
+                  ),
                 ),
-                Text(
-                  "$totalRetrait unités",
-                  style: const TextStyle(fontSize: 16, color: Colors.blue),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: CustomElevatedButonWithIcons(
-                backgroundColor: AppColors.primary,
-                label: "Valider le retrait",
-                icon: Icons.check_circle,
-                onPressed: () {
-                  List<RetraitProductModel> retraitList =
-                      produitsSelectionnes
-                          .map((produit) => produit.toRetraitModel())
-                          .toList();
-                  Logger().d('Produits : ${retraitList.first.toJson()}');
-                  apiController.initWithdraw({
-                    'identifier': identifier,
-                    'produits': retraitList,
-                  });
-                },
               ),
             ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.center,
-              child: TextButton(
-                onPressed: () => Get.back(),
-                child: const Text("Retour au panier"),
+
+            const SizedBox(height: 10),
+
+            // Lien retour
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text(
+                "Retour au panier",
+                style: TextStyle(color: Colors.black54),
               ),
             ),
           ],

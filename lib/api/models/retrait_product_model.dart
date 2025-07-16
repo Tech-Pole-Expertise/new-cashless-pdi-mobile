@@ -1,10 +1,12 @@
 class RetraitProductModel {
+  final String id;
   final String code;
-  final int qtte;
+  final String qtte;
 
-  RetraitProductModel({required this.code, required this.qtte});
+  RetraitProductModel({required this.id, required this.code,  required this.qtte});
 
   Map<String, dynamic> toJson() {
-    return {'code': code, 'qte': qtte};
+    return {'id':id, 'code': code,  'qte': qtte};
   }
+
 }

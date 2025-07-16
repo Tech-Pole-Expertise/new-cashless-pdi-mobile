@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:pdi_deme/api/controllers/api_controller.dart';
 import 'package:pdi_deme/api/models/panier_model.dart';
 import 'package:pdi_deme/api/models/pdi_model.dart';
 import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pdi_deme/views/widget/custom_app_bar.dart';
 import 'package:pdi_deme/views/widget/elevated_button.dart';
 
 class PanierScreen extends StatefulWidget {
@@ -15,49 +17,105 @@ class PanierScreen extends StatefulWidget {
 }
 
 class _PanierScreenState extends State<PanierScreen> {
-  bool isLoading = true;
   final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   List<PanierProduitModel> panierProduits = [];
-
   PdiModel? pdi;
+  String? errorMessage;
 
   @override
   void initState() {
     final args = Get.arguments;
-    panierProduits = args['possessions'] as List<PanierProduitModel>;
     pdi = args['pdi'] as PdiModel?;
+    panierProduits = pdi?.possessions ?? [];
+
+    for (var produit in panierProduits) {
+      produit.retrait = '0';
+    }
+
     super.initState();
+  }
+
+  bool validatePanier() {
+    final selection = panierProduits.where((p) => p.isSelected).toList();
+
+    if (selection.isEmpty) {
+      setState(() {
+        errorMessage = '❗ Veuillez sélectionner au moins un produit.';
+      });
+      return false;
+    }
+
+    for (var produit in selection) {
+      final val = produit.retrait;
+      final quantity = int.tryParse(val);
+
+      if (val.isEmpty) {
+        setState(() {
+          errorMessage =
+              '❗ Le champ retrait du produit "${produit.label}" est vide.';
+        });
+        return false;
+      }
+
+      if (quantity == null || quantity < 1) {
+        setState(() {
+          errorMessage =
+              '❗ La quantité du produit "${produit.label}" doit être supérieure à zéro.';
+        });
+        return false;
+      }
+
+      if (quantity > produit.quantite) {
+        setState(() {
+          errorMessage =
+              '❗ La quantité demandée pour "${produit.label}" dépasse le stock disponible (${produit.quantite}).';
+        });
+        return false;
+      }
+    }
+
+    setState(() {
+      errorMessage = null;
+    });
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final ApiController apiController = Get.find<ApiController>();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Panier disponible'),
-        leading: const BackButton(),
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(90),
+        child: CustomAppBar(
+          title: 'Panier disponible',
+          onBack: () {
+            Get.offAllNamed(AppRoutes.bottom);
+          },
+        ),
       ),
       body:
           panierProduits.isEmpty
               ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.local_grocery_store_outlined,
                       size: 50,
                       color: AppColors.error,
                     ),
-                    Text('Aucun produit dans le panier'),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    const Text('Aucun produit dans le panier'),
+                    const SizedBox(height: 24),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: CustomElevatedButton(
                         label: "Retour",
-                        onPressed: () {
-                          Get.back();
-                        },
+                        labelColor: Colors.white,
+                        onPressed: () => Get.back(),
                         backgroundColor: AppColors.error,
                       ),
                     ),
@@ -65,149 +123,191 @@ class _PanierScreenState extends State<PanierScreen> {
                 ),
               )
               : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundImage:
-                          (pdi?.photoUrl != null &&
-                                  pdi!.photoUrl.toString().isNotEmpty)
-                              ? NetworkImage(pdi!.photoUrl.toString())
-                              : const AssetImage(
-                                    'assets/img/defaut_profil.jpeg',
-                                  )
-                                  as ImageProvider,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        Text(
+                          '${pdi!.firstname.toUpperCase()} ${pdi!.lastname}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'N°${pdi!.identifier}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 26),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: panierProduits.length,
+                      itemBuilder: (context, index) {
+                        final produit = panierProduits[index];
+                        int currentQty = int.tryParse(produit.retrait) ?? 0;
 
-                  const SizedBox(height: 16),
-                  _buildTableHeader(),
-                  Form(
-                    key: key,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Expanded(
-                      child: ListView.builder(
-                        itemCount: panierProduits.length,
-                        itemBuilder: (context, index) {
-                          final produit = panierProduits[index];
-
-                          return Container(
-                            color:
-                                produit.isSelected ? Colors.blue.shade50 : null,
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: produit.isSelected,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      produit.isSelected = val!;
-                                      if (!val) {
-                                        produit.retrait = '';
-                                      }
-                                    });
-                                  },
+                        return Column(
+                          children: [
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppColors.primary),
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    '${produit.label} de ${produit.poids}',
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6),
+                                  child: Image.asset(
+                                    'assets/img/fruit.png',
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Text(produit.quantite.toString()),
-                                const SizedBox(width: 16),
-                                SizedBox(
-                                  width: 100,
-                                  child: TextFormField(
-                                    enabled: produit.isSelected,
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (val) => produit.retrait = val,
-                                    controller: TextEditingController(
-                                      text:
-                                          produit.retrait.isNotEmpty
-                                              ? produit.retrait
-                                              : '0',
-                                    ),
-                                    validator: (val) {
-                                      if (val == null || val.isEmpty) {
-                                        return 'Quantité invalide';
-                                      }
-                                      final quantity = int.tryParse(val);
-                                      if (quantity == null || quantity < 0) {
-                                        return 'Quantité invalide';
-                                      }
-                                      if (quantity > produit.quantite) {
-                                        return 'Quantité invalide';
-                                      }
-                                      return null;
+                              ),
+                              title: Text(
+                                '${produit.label} (${produit.poids})',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                              subtitle: Text(
+                                'Quantité totale : ${produit.quantite}',
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildQtyButton(
+                                    icon: Icons.remove,
+                                    onPressed: () {
+                                      setState(() {
+                                        currentQty--;
+                                        produit.retrait = currentQty.toString();
+                                        produit.isSelected = currentQty > 0;
+                                      });
                                     },
-                                    textAlign: TextAlign.center,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        vertical: 8,
-                                      ),
+                                    isEnabled: currentQty > 0,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '$currentQty',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                              ],
+                                  const SizedBox(width: 8),
+                                  _buildQtyButton(
+                                    icon: Icons.add,
+                                    onPressed: () {
+                                      setState(() {
+                                        currentQty++;
+                                        produit.retrait = currentQty.toString();
+                                        produit.isSelected = currentQty > 0;
+                                      });
+                                    },
+                                    isEnabled: currentQty < produit.quantite,
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: CustomElevatedButton(
-                      label: "Voir le récapitulatif",
-                      onPressed: () {
-                        if (!key.currentState!.validate()) {
-                          return;
-                        }
-                        Logger().d(
-                          'Mes infos : produits : ${panierProduits.where((p) => p.isSelected).toList()} et identifier : ${pdi!.identifier}',
-                        );
-                        Get.toNamed(
-                          AppRoutes.recapPanier,
-                          arguments: {
-                            'produits':
-                                panierProduits
-                                    .where((p) => p.isSelected)
-                                    .toList(),
-                            'identifier': pdi!.identifier,
-                          },
+                            const Divider(height: 1),
+                          ],
                         );
                       },
-                      backgroundColor: AppColors.primary,
                     ),
+                  ),
+                  if (errorMessage != null && errorMessage!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        errorMessage!,
+                        style: TextStyle(color: AppColors.error),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Obx(() {
+                      return CustomElevatedButton(
+                        label:
+                            apiController.isLoading.value
+                                ? "Traitement en cours..."
+                                : "Confirmer le retrait",
+                        labelColor: Colors.yellow,
+                        onPressed:
+                            apiController.isLoading.value
+                                ? null
+                                : () async {
+                                  if (!validatePanier()) return;
+
+                                  final List<PanierProduitModel> selection =
+                                      panierProduits
+                                          .where((p) => p.isSelected)
+                                          .toList();
+
+                                  final retraitList =
+                                      selection
+                                          .map(
+                                            (produit) =>
+                                                produit.toRetraitModel(),
+                                          )
+                                          .toList();
+
+                                  Logger().d({
+                                    'identifier': pdi!.identifier,
+                                    'produits':
+                                        retraitList
+                                            .map((r) => r.toJson())
+                                            .toList(),
+                                  });
+
+                                  await apiController.initWithdraw({
+                                    'identifier': pdi!.identifier,
+                                    'produits':
+                                        retraitList
+                                            .map((r) => r.toJson())
+                                            .toList(),
+                                  });
+                                },
+                        backgroundColor: AppColors.primary,
+                      );
+                    }),
                   ),
                 ],
               ),
     );
   }
 
-  Widget _buildTableHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Row(
-        children: const [
-          Text("Choisir", style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(width: 20),
-          Expanded(
-            child: Text(
-              "Libellé du produits",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          SizedBox(width: 10),
-          Text("Quantité", style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(width: 16),
-          Text("Retrait", style: TextStyle(fontWeight: FontWeight.bold)),
-        ],
+  Widget _buildQtyButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isEnabled,
+  }) {
+    return Opacity(
+      opacity: isEnabled ? 1.0 : 0.4,
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: isEnabled ? Colors.green.shade100 : Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: InkWell(
+          onTap: isEnabled ? onPressed : null,
+          child: Icon(icon, size: 16, color: Colors.black),
+        ),
       ),
     );
   }
