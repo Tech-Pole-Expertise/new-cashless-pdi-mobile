@@ -9,7 +9,7 @@ import 'package:pdi_deme/views/widget/elevated_button.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
-  final TextEditingController cardNumberController = TextEditingController();
+  final TextEditingController pdiPhoneController = TextEditingController();
   final ApiController apiController = Get.find<ApiController>();
   final GlobalKey<FormState> _key = GlobalKey();
   final homeController = Get.put(HomeController());
@@ -221,6 +221,8 @@ class HomeScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             // déclenche le formulaire manuel
+                            pdiPhoneController.clear();
+                            _key.currentState?.reset();
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
@@ -256,18 +258,20 @@ class HomeScreen extends StatelessWidget {
                                           ),
                                           const SizedBox(height: 16),
                                           CustomTextField(
-                                            controller: cardNumberController,
-                                            label: 'Numéro de la carte',
+                                            controller: pdiPhoneController,
+                                            label: 'Numéro du PDI',
+                                            maxLength: 8,
                                             isPassword: false,
-                                            hint: '44 47 56 74',
+                                            hint: '74 47 56 74',
                                             keyboardType: TextInputType.number,
                                             formatAsPhoneNumber: true,
+
                                             suffixIcon: IconButton(
                                               onPressed: () {
                                                 Get.toNamed(AppRoutes.scan);
                                               },
                                               icon: const Icon(
-                                                Icons.qr_code_scanner,
+                                                Icons.phone_android,
                                               ),
                                             ),
                                             prefix: const Padding(
@@ -275,7 +279,7 @@ class HomeScreen extends StatelessWidget {
                                                 right: 8.0,
                                               ),
                                               child: Text(
-                                                'No',
+                                                '+226',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16,
@@ -295,20 +299,14 @@ class HomeScreen extends StatelessWidget {
                                                   apiController.isLoading.value,
                                               onPressed: () async {
                                                 if (!_key.currentState!
-                                                    .validate())
+                                                    .validate()) {
                                                   return;
+                                                }
 
-                                                final success =
-                                                    await apiController
-                                                        .getPdiProfile(
-                                                          cardNumberController
-                                                              .text
-                                                              .replaceAll(
-                                                                ' ',
-                                                                '',
-                                                              )
-                                                              .trim(),
-                                                        );
+                                                final success = await apiController
+                                                    .getPdiProfile(
+                                                      '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
+                                                    );
                                                 if (success) {
                                                   Get.back();
                                                   Get.toNamed(

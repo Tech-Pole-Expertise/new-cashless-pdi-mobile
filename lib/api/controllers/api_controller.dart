@@ -722,10 +722,10 @@ class ApiController extends GetxController {
         contactInfoModel.value = contact;
       } else {
         final data = jsonDecode(response.body);
-        logger.d('Erreur lors du chargement des stats : $data');
+        logger.d('Erreur lors du chargement des infos contact : $data');
       }
     } catch (e) {
-      logger.d('Erreur catch lors du chargement des stats : $e');
+      logger.d('Erreur catch lors du chargement des infos contact : $e');
     } finally {
       isLoading.value = false;
     }

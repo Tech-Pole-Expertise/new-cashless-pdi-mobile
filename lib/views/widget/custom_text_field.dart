@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
   final int? maxLines;
+  final int? maxLength;
   final String? regexPattern;
   final String? validationMessage;
   final String? Function(String?)? validator;
@@ -30,6 +31,7 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     this.keyboardType = TextInputType.text,
     this.maxLines,
+    this.maxLength,
     this.regexPattern,
     this.validationMessage,
     this.validator,
@@ -57,7 +59,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
     if (widget.regexPattern != null) {
       final regex = RegExp(widget.regexPattern!);
       if (!regex.hasMatch(value.replaceAll(' ', ''))) {
-        // enlever les espaces pour valider
         return widget.validationMessage ?? 'Format invalide';
       }
     }
@@ -65,7 +66,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return null;
   }
 
-  // Formatage du numéro : 76789034 → 76 78 90 34
   String _formatPhoneNumber(String input) {
     final digits = input.replaceAll(RegExp(r'\D'), '');
     final buffer = StringBuffer();
@@ -79,47 +79,52 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final inputFormatters = <TextInputFormatter>[];
+
+    if (widget.formatAsPhoneNumber) {
+      inputFormatters.addAll([
+        FilteringTextInputFormatter.digitsOnly,
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          final digitsOnly = newValue.text.replaceAll(RegExp(r'\D'), '');
+          if (digitsOnly.length > 8) {
+            return oldValue; // Bloquer plus de 8 chiffres
+          }
+
+          final formatted = _formatPhoneNumber(digitsOnly);
+          return TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
+        }),
+      ]);
+    }
+
     return TextFormField(
       controller: widget.controller,
       keyboardType: widget.keyboardType,
       obscureText: _obscureText,
       readOnly: widget.isReadOnly,
       maxLines: widget.maxLines ?? 1,
+      maxLength: widget.formatAsPhoneNumber ? null : widget.maxLength, // <== ici
       validator: widget.validator ?? _defaultValidator,
-      inputFormatters:
-          widget.formatAsPhoneNumber
-              ? [
-                FilteringTextInputFormatter.digitsOnly,
-                TextInputFormatter.withFunction((oldValue, newValue) {
-                  final formatted = _formatPhoneNumber(newValue.text);
-                  return TextEditingValue(
-                    text: formatted,
-                    selection: TextSelection.collapsed(
-                      offset: formatted.length,
-                    ),
-                  );
-                }),
-              ]
-              : [],
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
         prefix: widget.prefix,
         prefixIcon: widget.prefixIcon,
-        suffixIcon:
-            widget.isPassword
-                ? IconButton(
-                  icon: Icon(
-                    // color: AppColors.textPrimary,
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                )
-                : widget.suffixIcon,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : widget.suffixIcon,
         border: const OutlineInputBorder(),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey),

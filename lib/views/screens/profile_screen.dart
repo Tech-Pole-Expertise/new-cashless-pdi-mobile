@@ -8,18 +8,35 @@ import 'package:pdi_deme/constant/app_color.dart';
 import 'package:pdi_deme/routes/app_routes.dart';
 import 'package:pdi_deme/views/widget/custom_circle_progress_bar.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController currentPassword = TextEditingController();
+
   final TextEditingController newPassword = TextEditingController();
+
   final TextEditingController newPasswordConfirm = TextEditingController();
+
   final homeController = Get.find<HomeController>();
+  final merchantController = Get.find<MerchantController>();
+  final apiController = Get.find<ApiController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Charger les données du marchand au démarrage
+    apiController.contactInfoModel.value == null
+        ? apiController.getContatInfos()
+        : null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final merchantController = Get.find<MerchantController>();
-    final apiController = Get.find<ApiController>();
     final merchant = apiController.merchantStat.value;
 
     if (merchant == null) {
@@ -123,12 +140,24 @@ class ProfileScreen extends StatelessWidget {
                     }
                     if (contact == null) {
                       return const Center(
-                        child: Text("Nous n'avons pas pu charger les infos"),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 20),
+                              Icon(Icons.error, color: Colors.red, size: 80),
+                              SizedBox(height: 8),
+                              Text("Nous n'avons pas pu charger les infos"),
+                            ],
+                          ),
+                        ),
                       );
                     } else {
-                     return  _contactCard(contact);
-                    }}
-                  ),
+                      return _contactCard(contact);
+                    }
+                  }),
                 ],
               ),
             ),

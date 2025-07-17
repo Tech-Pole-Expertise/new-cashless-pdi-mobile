@@ -92,7 +92,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       Logger().d('Données scannées : $data');
       if (data == null ||
           data is! Map<String, dynamic> ||
-          !data.containsKey('identifier')) {
+          !data.containsKey('phone')) {
         CustomSnackBar().showError(
           'Erreur de format',
           "QR Code non pris en charge",
@@ -103,7 +103,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
         return;
       }
 
-      if (data.containsKey('identifier')) {
+      if (data.containsKey('phone')) {
         // ✅ Afficher le loader
 
         final success = await apiController.getPdiProfile(data['identifier']);
