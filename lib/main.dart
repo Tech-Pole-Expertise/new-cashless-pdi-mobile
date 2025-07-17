@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_navigation.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_navigation.dart';
+import 'package:pv_deme/routes/app_routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'PDI Deme',
+      title: 'PV Dêmê',
          localizationsDelegates: const [
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,

@@ -1,5 +1,5 @@
-import 'package:pdi_deme/api/models/panier_model.dart';
-import 'package:pdi_deme/api/models/user_info_for_pdi_model.dart';
+import 'package:pv_deme/api/models/panier_model.dart';
+import 'package:pv_deme/api/models/user_info_for_pdi_model.dart';
 // à adapter
 
 class PdiModel {

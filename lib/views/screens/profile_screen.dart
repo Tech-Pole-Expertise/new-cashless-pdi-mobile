@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
-import 'package:pdi_deme/api/Service/merchant_stat_controller.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/api/models/contact_info_model.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
-import 'package:pdi_deme/views/widget/custom_circle_progress_bar.dart';
+import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/models/contact_info_model.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

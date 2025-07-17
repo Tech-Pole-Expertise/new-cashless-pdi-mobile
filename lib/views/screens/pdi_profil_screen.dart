@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/web.dart';
-import 'package:pdi_deme/api/models/pdi_model.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
-import 'package:pdi_deme/views/widget/elevated_button_with_icons.dart';
+import 'package:pv_deme/api/models/pdi_model.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/elevated_button_with_icons.dart';
 
 class PdiProfileScreen extends StatelessWidget {
   const PdiProfileScreen({super.key});

@@ -1,9 +1,9 @@
 // import 'package:flutter/material.dart';
-// import 'package:pdi_deme/constant/app_color.dart';
-// import 'package:pdi_deme/views/screens/appro_stock_screen.dart';
-// import 'package:pdi_deme/views/screens/history_screen.dart';
-// import 'package:pdi_deme/views/screens/home_screen.dart';
-// import 'package:pdi_deme/views/screens/profile_screen.dart';
+// import 'package:pv_deme/constant/app_color.dart';
+// import 'package:pv_deme/views/screens/appro_stock_screen.dart';
+// import 'package:pv_deme/views/screens/history_screen.dart';
+// import 'package:pv_deme/views/screens/home_screen.dart';
+// import 'package:pv_deme/views/screens/profile_screen.dart';
 
 // class BottomNavigationScreen extends StatefulWidget {
 //   const BottomNavigationScreen({super.key});
@@ -62,11 +62,11 @@
 //   }
 // }
 import 'package:flutter/material.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/views/screens/appro_stock_screen.dart';
-import 'package:pdi_deme/views/screens/history_screen.dart';
-import 'package:pdi_deme/views/screens/home_screen.dart';
-import 'package:pdi_deme/views/screens/profile_screen.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/screens/appro_stock_screen.dart';
+import 'package:pv_deme/views/screens/history_screen.dart';
+import 'package:pv_deme/views/screens/home_screen.dart';
+import 'package:pv_deme/views/screens/profile_screen.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});

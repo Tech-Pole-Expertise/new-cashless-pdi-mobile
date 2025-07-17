@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/api/models/panier_model.dart';
-import 'package:pdi_deme/api/models/retrait_product_model.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/views/widget/custom_app_bar.dart';
-import 'package:pdi_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/models/panier_model.dart';
+import 'package:pv_deme/api/models/retrait_product_model.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/widget/custom_app_bar.dart';
+import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class RecapitulatifScreen extends StatelessWidget {
   const RecapitulatifScreen({super.key});

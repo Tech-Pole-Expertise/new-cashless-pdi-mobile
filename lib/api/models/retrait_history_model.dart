@@ -1,4 +1,4 @@
-import 'package:pdi_deme/api/models/pdi_model.dart';
+import 'package:pv_deme/api/models/pdi_model.dart';
 
 class RetraitHistoryModel {
   final String identifier;

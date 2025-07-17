@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/Service/merchand_data_store_provider.dart';
-import 'package:pdi_deme/api/Service/merchant_data_store_controller.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
-import 'package:pdi_deme/views/widget/custom_circle_progress_bar.dart';
-import 'package:pdi_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
+import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
+import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

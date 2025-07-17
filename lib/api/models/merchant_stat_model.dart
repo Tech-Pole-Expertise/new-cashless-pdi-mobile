@@ -1,4 +1,4 @@
-import 'package:pdi_deme/api/models/retrait_history_model.dart';
+import 'package:pv_deme/api/models/retrait_history_model.dart';
 
 class MerchantStatModel {
   final String firstname;

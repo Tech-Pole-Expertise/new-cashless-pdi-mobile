@@ -1,6 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/models/merchand_model.dart';
+import 'package:pv_deme/api/models/merchand_model.dart';
 
 class MerchandDataStore {
   final box = GetStorage();

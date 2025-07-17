@@ -1,6 +1,6 @@
 {
-    "name": "pdi_deme",
-    "short_name": "pdi_deme",
+    "name": "pv_deme",
+    "short_name": "pv_deme",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

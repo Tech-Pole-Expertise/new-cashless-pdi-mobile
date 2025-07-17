@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/Service/merchand_data_store_provider.dart';
-import 'package:pdi_deme/api/models/merchand_model.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
+import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
+import 'package:pv_deme/api/models/merchand_model.dart';
+import 'package:pv_deme/routes/app_routes.dart';
 
 class MerchantController extends GetxController {
   final Rxn<MerchandModel> merchant = Rxn<MerchandModel>();

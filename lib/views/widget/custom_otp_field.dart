@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:logger/web.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/constant/app_color.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/constant/app_color.dart';
 
 class CustomOtpField extends StatefulWidget {
   final int numberOfFields;

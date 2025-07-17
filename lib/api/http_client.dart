@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:pdi_deme/api/Service/merchand_data_store_provider.dart';
-import 'package:pdi_deme/api/models/merchand_model.dart';
+import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
+import 'package:pv_deme/api/models/merchand_model.dart';
 
 class CustomHttpClient {
   final MerchandDataStore _merchandDataStore = MerchandDataStore();

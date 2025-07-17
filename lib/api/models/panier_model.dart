@@ -1,4 +1,4 @@
-import 'package:pdi_deme/api/models/retrait_product_model.dart';
+import 'package:pv_deme/api/models/retrait_product_model.dart';
 
 class PanierProduitModel {
   final String id;

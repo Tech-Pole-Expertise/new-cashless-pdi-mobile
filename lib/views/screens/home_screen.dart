@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdi_deme/api/Service/merchant_stat_controller.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
-import 'package:pdi_deme/views/widget/custom_text_field.dart';
-import 'package:pdi_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_text_field.dart';
+import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -250,7 +250,7 @@ class HomeScreen extends StatelessWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Text(
-                                            "Veuillez saisir le code de la carte du PDI",
+                                            "Veuillez saisir le numéro de teléphone de la personne",
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
@@ -259,7 +259,7 @@ class HomeScreen extends StatelessWidget {
                                           const SizedBox(height: 16),
                                           CustomTextField(
                                             controller: pdiPhoneController,
-                                            label: 'Numéro du PDI',
+                                            label: 'Numéro de teléphone',
                                             maxLength: 8,
                                             isPassword: false,
                                             hint: '74 47 56 74',
@@ -341,7 +341,7 @@ class HomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text("Entrer le numéro de carte"),
+                          child: const Text("Entrer le numéro de la personne"),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -353,6 +353,7 @@ class HomeScreen extends StatelessWidget {
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.green[900],
+
                             side: BorderSide(color: AppColors.primary),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(

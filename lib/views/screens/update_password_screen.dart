@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/views/widget/custom_app_bar.dart';
-import 'package:pdi_deme/views/widget/custom_text_field.dart';
-import 'package:pdi_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/widget/custom_app_bar.dart';
+import 'package:pv_deme/views/widget/custom_text_field.dart';
+import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class UpdatePasswordScreen extends StatefulWidget {
   const UpdatePasswordScreen({super.key});

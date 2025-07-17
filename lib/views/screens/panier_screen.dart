@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
-import 'package:pdi_deme/api/models/panier_model.dart';
-import 'package:pdi_deme/api/models/pdi_model.dart';
-import 'package:pdi_deme/constant/app_color.dart';
-import 'package:pdi_deme/routes/app_routes.dart';
-import 'package:pdi_deme/views/widget/custom_app_bar.dart';
-import 'package:pdi_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/models/panier_model.dart';
+import 'package:pv_deme/api/models/pdi_model.dart';
+import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_app_bar.dart';
+import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class PanierScreen extends StatefulWidget {
   const PanierScreen({super.key});
@@ -266,7 +266,8 @@ class _PanierScreenState extends State<PanierScreen> {
                                           .toList();
 
                                   Logger().d({
-                                    'identifier': pdi!.identifier,
+                                    'phone':
+                                        '+226${pdi!.phone.replaceAll(' ', '')}',
                                     'produits':
                                         retraitList
                                             .map((r) => r.toJson())
@@ -274,7 +275,7 @@ class _PanierScreenState extends State<PanierScreen> {
                                   });
 
                                   await apiController.initWithdraw({
-                                    'identifier': pdi!.identifier,
+                                    'phone': pdi!.phone,
                                     'produits':
                                         retraitList
                                             .map((r) => r.toJson())

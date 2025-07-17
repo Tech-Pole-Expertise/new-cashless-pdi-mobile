@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:pdi_deme/constant/app_color.dart';
+import 'package:pv_deme/constant/app_color.dart';
 
 class CustomLisTile extends StatelessWidget {
   final String title;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:pdi_deme/api/models/retrait_history_model.dart'; // Assure-toi d'importer le bon fichier
-import 'package:pdi_deme/constant/app_color.dart';
+import 'package:pv_deme/api/models/retrait_history_model.dart'; // Assure-toi d'importer le bon fichier
+import 'package:pv_deme/constant/app_color.dart';
 
 class CustomTableForHistory extends StatelessWidget {
   final List<RetraitHistoryModel> data;

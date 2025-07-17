@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
-import 'package:pdi_deme/api/api_routes.dart';
-import 'package:pdi_deme/api/http_client.dart';
+import 'package:pv_deme/api/api_routes.dart';
+import 'package:pv_deme/api/http_client.dart';
 
 class ApiProvider {
   final CustomHttpClient _client = CustomHttpClient();

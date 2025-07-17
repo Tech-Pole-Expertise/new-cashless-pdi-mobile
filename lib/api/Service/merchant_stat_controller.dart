@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pdi_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
 
 class HomeController extends GetxController {
   final ApiController apiController = Get.find<ApiController>();
