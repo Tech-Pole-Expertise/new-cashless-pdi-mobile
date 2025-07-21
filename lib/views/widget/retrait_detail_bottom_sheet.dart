@@ -28,7 +28,7 @@ class RetraitDetailsSheet extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Center(
@@ -57,7 +57,7 @@ class RetraitDetailsSheet extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Center(
@@ -114,7 +114,7 @@ class RetraitDetailsSheet extends StatelessWidget {
                 label: 'Fermer',
                 onPressed: () => Get.back(),
                 backgroundColor: AppColors.primary,
-                labelColor: Colors.white,
+                labelColor: Colors.yellow,
               ),
             ],
           ),

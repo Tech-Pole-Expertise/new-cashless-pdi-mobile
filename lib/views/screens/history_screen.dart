@@ -67,8 +67,8 @@ class HistoryScreen extends StatelessWidget {
                       controller: filter,
                       readOnly: true,
                       decoration: InputDecoration(
-                        label: Text("Filter"),
-                        hintText: "Filter vos transactions",
+                        label: Text("Filtrer"),
+                        hintText: "Filtrer",
                         suffixIcon: Icon(
                           Icons.filter_alt,
                           color: AppColors.primary,
@@ -232,7 +232,7 @@ class HistoryScreen extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Quantité",
+                                        "Date du retrait",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black54,

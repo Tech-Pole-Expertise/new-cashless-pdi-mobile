@@ -35,57 +35,62 @@ class VerifyOtpScreen extends StatelessWidget {
           },
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 24),
-          CustomOtpField(
-            operationType: 'withdraw',
-            retraitId: retraitId,
-            key: otpFieldKey,
-            text: 'Veuillez entrer le code OTP envoyé au client :',
-            otpTime: otpTime,
-            numberOfFields: 6,
-            onCodeChanged: (code) {
-              isCompleted.value = code.length == 6; // ✅ Active dès 6 chiffres
-              otp = code;
-            },
-            onSubmit: (code) {
-              otp = code;
-              isCompleted.value = code.length == 6;
-            },
-          ),
-          const SizedBox(height: 24),
-          Obx(
-            () =>
-                isCompleted.value
-                    ? Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: SizedBox(
-                        width: Get.width,
-                        child: CustomElevatedButton(
-                          isLoading: apiController.isLoading.value,
-                          label: 'Valider',
-                          labelColor: Colors.yellow,
-                          onPressed: () async {
-                            Logger().d('Jes suis appélé aussi');
-                            final success = await apiController
-                                .withdrawValidation({
-                                  "retrait_id": retraitId,
-                                  "otp": otp,
-                                });
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            CustomOtpField(
+              operationType: 'withdraw',
+              retraitId: retraitId,
+              key: otpFieldKey,
+              text: 'Veuillez entrer le code OTP envoyé au client :',
+              otpTime: otpTime,
+              numberOfFields: 6,
+              onCodeChanged: (code) {
+                isCompleted.value = code.length == 6; // ✅ Active dès 6 chiffres
+                otp = code;
+              },
+              onSubmit: (code) {
+                otp = code;
+                isCompleted.value = code.length == 6;
+              },
+            ),
+            const SizedBox(height: 24),
+            Obx(
+              () =>
+                  isCompleted.value
+                      ? Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: SizedBox(
+                          width: Get.width,
+                          child: CustomElevatedButton(
+                            isLoading: apiController.isLoading.value,
+                            label: 'Valider',
+                            labelColor: Colors.yellow,
+                            onPressed: () async {
+                              Logger().d(
+                                'Je suis appelé aussi : ${{"retrait_id": retraitId, "otp": otp}}',
+                              );
 
-                            if (!success) {
-                              otpFieldKey.currentState?.clearFields();
-                              isCompleted.value = false;
-                            }
-                          },
-                          backgroundColor: AppColors.primary,
+                              final success = await apiController
+                                  .withdrawValidation({
+                                    "retrait_id": retraitId,
+                                    "otp": otp,
+                                  });
+
+                              if (!success) {
+                                otpFieldKey.currentState?.clearFields();
+                                isCompleted.value = false;
+                              }
+                            },
+                            backgroundColor: AppColors.primary,
+                          ),
                         ),
-                      ),
-                    )
-                    : const SizedBox.shrink(),
-          ),
-        ],
+                      )
+                      : const SizedBox.shrink(),
+            ),
+          ],
+        ),
       ),
     );
   }

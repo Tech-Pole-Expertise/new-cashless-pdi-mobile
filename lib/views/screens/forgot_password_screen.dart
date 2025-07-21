@@ -27,7 +27,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.grey),
           onPressed: () => Get.back(),
         ),
       ),
@@ -93,7 +93,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                       () => CustomElevatedButton(
                         isLoading: apiController.isLoading.value,
                         label: 'Vérifier le numéro',
-                        labelColor: Colors.white,
+                        labelColor: Colors.yellow,
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             onSubmit();

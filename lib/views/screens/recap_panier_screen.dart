@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/api/models/panier_model.dart';
 import 'package:pv_deme/api/models/retrait_product_model.dart';
@@ -21,13 +20,13 @@ class RecapitulatifScreen extends StatelessWidget {
         args['produits'] ?? [];
     final identifier = args['identifier'];
 
-    final int totalRetrait = produitsSelectionnes.fold(
-      0,
-      (somme, item) =>
-          somme + int.tryParse(item.retrait)!.clamp(0, item.quantite),
-    );
+    // final int totalRetrait = produitsSelectionnes.fold(
+    //   0,
+    //   (somme, item) =>
+    //       somme + int.tryParse(item.retrait)!.clamp(0, item.quantite),
+    // );
 
-    final merchantController = Get.find<MerchantController>();
+    // final merchantController = Get.find<MerchantController>();
     final pdi = apiController.pdiProfile.value;
     return Scaffold(
       backgroundColor: Colors.white,

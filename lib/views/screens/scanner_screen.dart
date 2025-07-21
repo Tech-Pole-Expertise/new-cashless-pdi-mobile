@@ -233,10 +233,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
               SizedBox(height: 16),
 
               Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(20.0),
                 child: SizedBox(
                   width: Get.width,
                   child: CustomElevatedButonWithIcons(
+                    labelColor: Colors.yellow,
+                    iconColor: Colors.yellow,
                     backgroundColor: AppColors.primary,
                     label:
                         isFlashOn ? 'Désactiver le Flash' : 'Activer le Flash',
@@ -247,14 +249,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              // const SizedBox(height: 24),
               InkWell(
                 onTap: () => Get.back(),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Vous avez des problèmes avec le scan? ',
+                      text: 'Des problèmes avec le scan? ',
                       style: TextStyle(color: AppColors.textSecondary),
                       children: [
                         TextSpan(

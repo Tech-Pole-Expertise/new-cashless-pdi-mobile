@@ -69,36 +69,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        radius: 20,
+                        radius: 35,
+                        backgroundColor: Colors.transparent,
                         backgroundImage:
                             const AssetImage('assets/img/pro.png')
                                 as ImageProvider,
-                        // merchant.photoUrl != null
-                        //     ? NetworkImage(merchant.photoUrl!)
-                        //     : const AssetImage('assets/img/pro.png')
-                        //         as ImageProvider,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              '${merchant.lastname.toUpperCase()} ${merchant.firstname}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${merchant.lastname.toUpperCase()} ${merchant.firstname}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
+                          ),
 
-                            const SizedBox(height: 4),
+                          const SizedBox(height: 4),
 
-                            /// ✅ Numéro dynamique
-                            Text(
-                              merchant.phone,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
+                          /// ✅ Numéro dynamique
+                          Text(
+                            merchant.phone,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
                       ),
 
                       /// ✅ Texte dynamique "Hello"
@@ -215,7 +210,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       elevation: 2,
       child: ListTile(
         leading: Icon(icon, color: AppColors.textPrimary),
-        title: Text(text, style: const TextStyle(fontSize: 14)),
+        title: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 14,
+            decoration: TextDecoration.underline,
+          ),
+        ),
         onTap: onTap,
       ),
     );

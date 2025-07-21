@@ -26,7 +26,7 @@ class MerchandModel {
       username: json['username'] ?? '',
       firstName: json['first_name'] ?? '',
       lastName: json['last_name'] ?? '',
-      photoUrl: json['photo'] ?? null,
+      photoUrl: json['photo'] ?? '',
       identifier: json['identifier'] ?? '',
       isMerchand: json['is_merchant'] ?? false,
     );

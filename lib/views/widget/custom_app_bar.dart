@@ -46,13 +46,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       if (onBack != null) {
                         onBack!(); // action personnalisée
                       } else {
-                        Navigator.of(context).maybePop(); // comportement par défaut
+                        Navigator.of(
+                          context,
+                        ).maybePop(); // comportement par défaut
                       }
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      width: 26,
-                      height: 26,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.primaryLight,
@@ -61,7 +63,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       child: const Icon(
                         Icons.arrow_back,
                         color: AppColors.primary,
-                        size: 18,
+                        size: 24,
                       ),
                     ),
                   ),

@@ -85,7 +85,7 @@ class PdiProfileScreen extends StatelessWidget {
                   ),
                   _buildInfoRow(
                     label1: 'Centre',
-                    value1: pdiModel.userInfos.centre!,
+                    value1: pdiModel.userInfos.centre,
                     label2: 'Sexe',
                     value2: pdiModel.userInfos.gender!,
                   ),

@@ -5,6 +5,7 @@ import 'package:pv_deme/views/screens/appro_stock_screen.dart';
 import 'package:pv_deme/views/screens/bottom_navigation_screen.dart';
 import 'package:pv_deme/views/screens/change_password_screen.dart';
 import 'package:pv_deme/views/screens/change_phone_number_screen.dart';
+import 'package:pv_deme/views/screens/empty_panier_screen.dart';
 import 'package:pv_deme/views/screens/forgot_password_screen.dart';
 import 'package:pv_deme/views/screens/history_screen.dart';
 import 'package:pv_deme/views/screens/home_screen.dart';

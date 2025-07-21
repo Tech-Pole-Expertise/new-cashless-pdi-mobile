@@ -31,7 +31,10 @@ class ApiController extends GetxController {
       <RetraitHistoryModel>[].obs;
 
   RxList<StockProductModel> marchandStocks = <StockProductModel>[].obs;
+    RxList<StockProductModel> marchandFilteredStocks = <StockProductModel>[].obs;
+
   RxList<ApproModel> marchandAppro = <ApproModel>[].obs;
+  RxList<ApproModel> marchandFilteredAppro = <ApproModel>[].obs;
   final Rx<PdiModel?> pdiProfile = Rx<PdiModel?>(null);
   final Rx<MerchantStatModel?> merchantStat = Rx<MerchantStatModel?>(null);
   final Rx<ContactInfoModel?> contactInfoModel = Rx<ContactInfoModel?>(null);
@@ -625,6 +628,12 @@ class ApiController extends GetxController {
                 StockProductModel.fromJson(retrait as Map<String, dynamic>),
           ),
         );
+         marchandFilteredStocks.assignAll(
+          data.map(
+            (retrait) =>
+                StockProductModel.fromJson(retrait as Map<String, dynamic>),
+          ),
+        );
         logger.d('Stock convertie $marchandStocks');
       } else {
         logger.d('Échec du chargement du sotck: ${response.statusCode}');
@@ -657,6 +666,11 @@ class ApiController extends GetxController {
         final List<dynamic> data = jsonDecode(response.body);
         logger.d('Données Appro : $data');
         marchandAppro.assignAll(
+          data.map(
+            (retrait) => ApproModel.fromJson(retrait as Map<String, dynamic>),
+          ),
+        );
+         marchandFilteredAppro.assignAll(
           data.map(
             (retrait) => ApproModel.fromJson(retrait as Map<String, dynamic>),
           ),
@@ -729,5 +743,10 @@ class ApiController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void logout() {
+    final merchantController = Get.find<MerchantController>();
+    merchantController.logout();
   }
 }

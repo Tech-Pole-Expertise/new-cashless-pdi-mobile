@@ -23,6 +23,24 @@ class _RetraitFilterSheetState extends State<RetraitFilterSheet> {
     final queryClient = clientController.text.toLowerCase();
     final queryId = identifierController.text.toLowerCase();
 
+    // Ajuster startDate et endDate aux bornes de journée
+    final adjustedStart =
+        startDate != null
+            ? DateTime(
+              startDate!.year,
+              startDate!.month,
+              startDate!.day,
+              0,
+              0,
+              0,
+            )
+            : null;
+
+    final adjustedEnd =
+        endDate != null
+            ? DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59)
+            : null;
+
     final filtered =
         apiController.retraitHistoryData.where((retrait) {
           final identifier = retrait.pdi.identifier.toLowerCase();
@@ -35,12 +53,12 @@ class _RetraitFilterSheetState extends State<RetraitFilterSheet> {
           final matchId = queryId.isEmpty || identifier.contains(queryId);
 
           final matchDate =
-              (startDate == null ||
-                  retraitDate.isAtSameMomentAs(startDate!) ||
-                  retraitDate.isAfter(startDate!)) &&
-              (endDate == null ||
-                  retraitDate.isAtSameMomentAs(endDate!) ||
-                  retraitDate.isBefore(endDate!));
+              (adjustedStart == null ||
+                  retraitDate.isAtSameMomentAs(adjustedStart) ||
+                  retraitDate.isAfter(adjustedStart)) &&
+              (adjustedEnd == null ||
+                  retraitDate.isAtSameMomentAs(adjustedEnd) ||
+                  retraitDate.isBefore(adjustedEnd));
 
           return matchClient && matchId && matchDate;
         }).toList();

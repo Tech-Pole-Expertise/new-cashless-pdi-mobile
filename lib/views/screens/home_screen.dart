@@ -4,6 +4,7 @@ import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_outline_button.dart';
 import 'package:pv_deme/views/widget/custom_text_field.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';
 
@@ -45,20 +46,18 @@ class HomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // Haut : profil utilisateur
                 Row(
+                  
                   children: [
                     CircleAvatar(
-                      radius: 20,
+                      radius: 35,
+                      backgroundColor: Colors.transparent,
                       backgroundImage:
                           const AssetImage('assets/img/pro.png')
                               as ImageProvider,
-                      // (merchant.photoUrl != null &&
-                      //         merchant.photoUrl!.isNotEmpty)
-                      //     ? NetworkImage(merchant.photoUrl!)
-                      //     : const AssetImage('assets/img/pro.png')
-                      //         as ImageProvider,
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -216,152 +215,141 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // déclenche le formulaire manuel
-                            pdiPhoneController.clear();
-                            _key.currentState?.reset();
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              builder: (context) {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom:
-                                        MediaQuery.of(
-                                          context,
-                                        ).viewInsets.bottom,
-                                  ),
-                                  child: SingleChildScrollView(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 24,
-                                    ),
-                                    child: Form(
-                                      key: _key,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Text(
-                                            "Veuillez saisir le numéro de teléphone de la personne",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 16),
-                                          CustomTextField(
-                                            controller: pdiPhoneController,
-                                            label: 'Numéro de teléphone',
-                                            maxLength: 8,
-                                            isPassword: false,
-                                            hint: '74 47 56 74',
-                                            keyboardType: TextInputType.number,
-                                            formatAsPhoneNumber: true,
 
-                                            suffixIcon: IconButton(
-                                              onPressed: () {
-                                                Get.toNamed(AppRoutes.scan);
-                                              },
-                                              icon: const Icon(
-                                                Icons.phone_android,
-                                              ),
-                                            ),
-                                            prefix: const Padding(
-                                              padding: EdgeInsets.only(
-                                                right: 8.0,
-                                              ),
-                                              child: Text(
-                                                '+226',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                  color: AppColors.textPrimary,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          const SizedBox(height: 16),
-                                          Obx(
-                                            () => CustomElevatedButton(
-                                              label: 'Rechercher',
-                                              labelColor: Colors.yellow,
-
-                                              isLoading:
-                                                  apiController.isLoading.value,
-                                              onPressed: () async {
-                                                if (!_key.currentState!
-                                                    .validate()) {
-                                                  return;
-                                                }
-
-                                                final success = await apiController
-                                                    .getPdiProfile(
-                                                      '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
-                                                    );
-                                                if (success) {
-                                                  Get.back();
-                                                  Get.toNamed(
-                                                    AppRoutes.panier,
-
-                                                    arguments: {
-                                                      'pdi':
-                                                          apiController
-                                                              .pdiProfile
-                                                              .value,
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                              backgroundColor:
-                                                  AppColors.primary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green[900],
-                            foregroundColor: Colors.yellow,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: const Text("Entrer le numéro de la personne"),
-                        ),
+                      // ✅ CustomElevatedButton : Scanner
+                      CustomElevatedButton(
+                        label: "Scanner le QR code",
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.scan);
+                        },
+                        backgroundColor: Colors.green[900]!,
+                        labelColor: Colors.yellow,
                       ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Get.toNamed(AppRoutes.scan);
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.green[900],
 
-                            side: BorderSide(color: AppColors.primary),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                      const SizedBox(height: 12),
+
+                      // ✅ CustomOutlinedButton : Entrer numéro
+                      CustomOutlinedButton(
+                        label: "Entrer le numéro de la personne",
+                        onPressed: () {
+                          pdiPhoneController.clear();
+                          _key.currentState?.reset();
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
                             ),
-                          ),
-                          child: const Text("Scanner le QR code"),
-                        ),
+                            builder: (context) {
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom,
+                                ),
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 24,
+                                  ),
+                                  child: Form(
+                                    key: _key,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          "Veuillez saisir le numéro de teléphone de la personne",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        CustomTextField(
+                                          controller: pdiPhoneController,
+                                          label: 'Numéro de teléphone',
+                                          isPassword: false,
+                                          hint: '74 47 56 74',
+                                          keyboardType: TextInputType.number,
+                                          formatAsPhoneNumber: true,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Veuillez saisir un numéro de téléphone valide';
+                                            }
+                                            if (value
+                                                    .replaceAll(' ', '')
+                                                    .length !=
+                                                8) {
+                                              return 'Le numéro doit contenir 8 chiffres';
+                                            }
+                                            return null;
+                                          },
+                                          suffixIcon: IconButton(
+                                            onPressed: () {
+                                              Get.toNamed(AppRoutes.scan);
+                                            },
+                                            icon: const Icon(
+                                              Icons.phone_android,
+                                            ),
+                                          ),
+                                          prefix: const Padding(
+                                            padding: EdgeInsets.only(
+                                              right: 8.0,
+                                            ),
+                                            child: Text(
+                                              '+226',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Obx(
+                                          () => CustomElevatedButton(
+                                            label: 'Rechercher',
+                                            labelColor: Colors.yellow,
+                                            isLoading:
+                                                apiController.isLoading.value,
+                                            onPressed: () async {
+                                              if (!_key.currentState!
+                                                  .validate()) {
+                                                return;
+                                              }
+                                              final success = await apiController
+                                                  .getPdiProfile(
+                                                    '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
+                                                  );
+                                              if (success) {
+                                                Get.back();
+                                                Get.toNamed(
+                                                  AppRoutes.panier,
+                                                  arguments: {
+                                                    'pdi':
+                                                        apiController
+                                                            .pdiProfile
+                                                            .value,
+                                                  },
+                                                );
+                                              }
+                                            },
+                                            backgroundColor: AppColors.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        borderColor: AppColors.primary,
+                        labelColor: Colors.green[900],
                       ),
                     ],
                   ),

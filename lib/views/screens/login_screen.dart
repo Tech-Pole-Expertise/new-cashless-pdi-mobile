@@ -67,7 +67,15 @@ class LoginScreen extends StatelessWidget {
                         ), // facultatif, pour être clair
                         suffixIcon: null,
                         formatAsPhoneNumber: true,
-
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Veuillez saisir un numéro de téléphone valide';
+                          }
+                          if (value.replaceAll(' ', '').length != 8) {
+                            return 'Le numéro doit contenir 8 chiffres';
+                          }
+                          return null;
+                        },
                         // Utilise prefix à la place
                         prefix: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
@@ -86,8 +94,10 @@ class LoginScreen extends StatelessWidget {
                         controller: passwordController,
                         label: 'Mot de passe',
                         prefixIcon: Icon(Icons.lock),
-                        // regexPattern: r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$',
-                        // validationMessage: 'Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.',
+                        regexPattern: r'^.{8,}$',
+                        validationMessage:
+                            'Le mot de passe doit contenir au moins 8 caractères.',
+
                         isPassword: true,
                         hint: '********',
                         keyboardType: TextInputType.text,

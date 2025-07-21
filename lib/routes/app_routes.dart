@@ -24,4 +24,5 @@ class AppRoutes {
   static const String marchandStocks = '/merchand-stock';
   static const String otpVerifyForPassword = '/otp-verify-for-password';
    static const String updatePassword = '/update-password';
+
 }

@@ -6,6 +6,7 @@ import 'package:pv_deme/api/models/panier_model.dart';
 import 'package:pv_deme/api/models/pdi_model.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/screens/empty_panier_screen.dart';
 import 'package:pv_deme/views/widget/custom_app_bar.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';
 
@@ -98,30 +99,7 @@ class _PanierScreenState extends State<PanierScreen> {
       ),
       body:
           panierProduits.isEmpty
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.local_grocery_store_outlined,
-                      size: 50,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Aucun produit dans le panier'),
-                    const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: CustomElevatedButton(
-                        label: "Retour",
-                        labelColor: Colors.white,
-                        onPressed: () => Get.back(),
-                        backgroundColor: AppColors.error,
-                      ),
-                    ),
-                  ],
-                ),
-              )
+              ? EmptyPanierScreen(pdi: pdi!)
               : Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,15 +277,15 @@ class _PanierScreenState extends State<PanierScreen> {
     return Opacity(
       opacity: isEnabled ? 1.0 : 0.4,
       child: Container(
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
           color: isEnabled ? Colors.green.shade100 : Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: InkWell(
           onTap: isEnabled ? onPressed : null,
-          child: Icon(icon, size: 16, color: Colors.black),
+          child: Icon(icon, size: 20, color: Colors.black),
         ),
       ),
     );

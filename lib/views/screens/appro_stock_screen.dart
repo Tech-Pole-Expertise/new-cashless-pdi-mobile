@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/widget/appro_bottom_sheet.dart';
 
 class StockAndApproView extends StatefulWidget {
   const StockAndApproView({super.key});
@@ -14,6 +15,7 @@ class StockAndApproView extends StatefulWidget {
 class _StockAndApproViewState extends State<StockAndApproView> {
   List<bool> isSelected = [true, false]; // Stock = index 0, Appro = index 1
   final ApiController apiController = Get.find<ApiController>();
+  final TextEditingController recherche = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -31,7 +33,7 @@ class _StockAndApproViewState extends State<StockAndApproView> {
 
       appBar: AppBar(
         title: Text(
-          'Stock/Approvisionnement',
+          'Gestion du stock',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
@@ -45,16 +47,9 @@ class _StockAndApproViewState extends State<StockAndApproView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
-
               /// Header personnalisé avec photo + infos
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // Text(
-              //   'Consultez ici votre stock actuel ou vos derniers approvisionnements enregistrés.',
-              //   style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
-              // ),
-              const SizedBox(height: 16),
               Center(
                 child: Container(
                   height: 60,
@@ -97,6 +92,9 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                           ),
                           child: Text(
                             label,
+                            softWrap: false, // optionnel mais conseillé ici
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color:
                                   selected
@@ -109,6 +107,26 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                       );
                     }),
                   ),
+                ),
+              ),
+              SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: recherche,
+                  decoration: InputDecoration(
+                    label: Text("Recherche"),
+                    hintText: "Rechercher une opération",
+                    suffixIcon: Icon(Icons.search, color: AppColors.primary),
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.primary),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.primary),
+                    ),
+                  ),
+                  onChanged: searchItem,
                 ),
               ),
 
@@ -138,7 +156,7 @@ class _StockAndApproViewState extends State<StockAndApproView> {
   }
 
   Widget _buildStockList() {
-    if (apiController.marchandStocks.isEmpty) {
+    if (apiController.marchandFilteredStocks.isEmpty) {
       return const Center(
         child: Text(
           'Aucun produit en stock.',
@@ -148,9 +166,9 @@ class _StockAndApproViewState extends State<StockAndApproView> {
     }
 
     return ListView.builder(
-      itemCount: apiController.marchandStocks.length,
+      itemCount: apiController.marchandFilteredStocks.length,
       itemBuilder: (context, index) {
-        final stock = apiController.marchandStocks[index];
+        final stock = apiController.marchandFilteredStocks[index];
 
         return Column(
           children: [
@@ -179,7 +197,7 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                'Code: ${stock.code ?? '---'}',
+                'Code: ${stock.code}',
               ), // Utilise stock.code si dispo
               trailing: Text(
                 'Qté dispo : ${stock.qtePhysique}',
@@ -197,44 +215,114 @@ class _StockAndApproViewState extends State<StockAndApproView> {
   }
 
   Widget _buildApproList() {
-    if (apiController.marchandAppro.isEmpty) {
+    if (apiController.marchandFilteredAppro.isEmpty) {
       return const Center(
         child: Text(
-          'Aucun approvisionnement reçu.',
+          'Aucun approvisionnement trouvé.',
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }
 
     return ListView.builder(
-      itemCount: apiController.marchandAppro.length,
+      itemCount: apiController.marchandFilteredAppro.length,
       itemBuilder: (context, index) {
-        final appro = apiController.marchandAppro[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: ExpansionTile(
-            leading: const Icon(Icons.local_shipping, color: AppColors.primary),
-            title: Text(
-              'Reçu le ${DateFormat('dd MMM yyyy à HH:mm').format(appro.date)}',
+        final appro = apiController.marchandFilteredAppro[index];
+        return InkWell(
+          onTap: () {
+            Get.bottomSheet(
+              ApproBottomSheetDetailsSheet(produits: appro.produits),
+              isScrollControlled: false,
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+            );
+          },
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: ListTile(
+              leading: const Icon(
+                Icons.local_shipping,
+                color: AppColors.primary,
+              ),
+              title: Text(
+                'Reçu le ${DateFormat('dd MMM yyyy à HH:mm').format(appro.date)}',
+              ),
             ),
-            children:
-                appro.produits.map((prod) {
-                  return ListTile(
-                    leading: Image.asset('assets/img/fruit.png'),
-                    title: Text(prod.produit),
-                    subtitle: Text('Poids: ${prod.poids}'),
-                    trailing: Text(
-                      '+${prod.qte}',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                }).toList(),
           ),
         );
       },
     );
+  }
+
+  void searchItem(String query) {
+    final input = query.toLowerCase();
+
+    if (input.isEmpty) {
+      // Si aucun texte tapé → réinitialiser la liste filtrée
+      apiController.marchandFilteredAppro.assignAll(
+        apiController.marchandAppro,
+      );
+      apiController.marchandFilteredStocks.assignAll(
+        apiController.marchandStocks,
+      );
+      return;
+    }
+    // Filtrer les données en fonction de la saisie
+    if (isSelected[0]) {
+      // Filtrer pour la liste de stock
+      _filterStock(input);
+    } else {
+      // Filtrer pour la liste d'approvisionnement
+      _filterAppro(input);
+    }
+
+    // Mettre à jour la liste filtrée
+  }
+
+  void _filterStock(String input) {
+    final filtered =
+        apiController.marchandStocks.where((stock) {
+          final stockLabel = stock.label.toLowerCase();
+          final stockCode = stock.code.toLowerCase();
+          final stockPoids = stock.poids.toLowerCase();
+          final stockQte = stock.qtePhysique.toString().toLowerCase();
+          return stockLabel.contains(input) ||
+              stockCode.contains(input) ||
+              stockPoids.contains(input) ||
+              stockQte.contains(input);
+        }).toList();
+
+    filtered.isNotEmpty
+        ? apiController.marchandFilteredStocks.assignAll(filtered)
+        : apiController.marchandFilteredStocks.assignAll([]);
+  }
+
+  void _filterAppro(String input) {
+    final query = input.toLowerCase();
+
+    final filtered =
+        apiController.marchandAppro.where((appro) {
+          // Vérifie si la date contient le texte recherché
+          final formattedDate =
+              DateFormat(
+                'dd MMM yyyy à HH:mm',
+              ).format(appro.date).toLowerCase();
+
+          final matchDate = formattedDate.contains(query);
+
+          // Vérifie si au moins un produit contient le texte recherché
+          final matchProduit = appro.produits.any(
+            (produit) =>
+                produit.produit.toLowerCase().contains(query) ||
+                produit.qte.toString().toLowerCase().contains(query) ||
+                produit.poids.toLowerCase().contains(query),
+          );
+
+          return matchDate || matchProduit;
+        }).toList();
+
+    apiController.marchandFilteredAppro.assignAll(filtered);
   }
 }
