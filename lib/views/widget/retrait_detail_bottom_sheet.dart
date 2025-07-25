@@ -14,61 +14,86 @@ class RetraitDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final date = DateFormat('dd/MM/yyyy').format(retrait.date);
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      child: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// --- Header avec fond vert clair ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
-                  borderRadius: BorderRadius.circular(8),
+    return Container(
+      color: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// --- Header avec fond vert clair ---
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
                 ),
-                child: const Center(
-                  child: Text(
-                    'Détails du retrait',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              child: const Center(
+                child: Text(
+                  'Détails du retrait',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            /// --- Infos utilisateur ---
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  _infoRow(
+                    Icons.person_outline,
+                    'Nom complet',
+                    retrait.clientName,
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              /// --- Infos utilisateur ---
-              _infoRow(Icons.person_outline, 'Nom complet', retrait.clientName),
-              _infoRow(Icons.phone_outlined, 'Téléphone', retrait.pdi.phone),
-              _infoRow(Icons.lock_outline, 'Identifiant', retrait.identifier),
-              _infoRow(
-                Icons.calendar_today_outlined,
-                'Date de la transaction',
-                date,
-              ),
-
-              const SizedBox(height: 20),
-
-              /// --- Titre panier retiré ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Panier retiré',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  _infoRow(
+                    Icons.phone_outlined,
+                    'Téléphone',
+                    retrait.pdi.phone,
                   ),
+                  _infoRow(
+                    Icons.lock_outline,
+                    'Identifiant',
+                    retrait.identifier,
+                  ),
+                  _infoRow(
+                    Icons.calendar_today_outlined,
+                    'Date de la transaction',
+                    date,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// --- Titre panier retiré ---
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
+                // borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text(
+                  'Panier retiré',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
-              const SizedBox(height: 12),
-              Row(
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -81,43 +106,42 @@ class RetraitDetailsSheet extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
 
-              /// --- Liste des produits ---
-              ...retrait.produits.map((prod) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/img/fruit.png',
-                        width: 25,
-                        height: 25,
+            /// --- Liste des produits ---
+            ...retrait.produits.map((prod) {
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Image.asset('assets/img/fruit.png', width: 25, height: 25),
+                    // const Icon(Icons.check_circle, color: AppColors.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        prod.produit,
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      // const Icon(Icons.check_circle, color: AppColors.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          prod.produit,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Column(children: [Text(prod.qte.toString())]),
-                    ],
-                  ),
-                );
-              }),
+                    ),
+                    Column(children: [Text(prod.qte.toString())]),
+                  ],
+                ),
+              );
+            }),
 
-              const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-              /// --- Bouton fermer ---
-              CustomElevatedButton(
+            /// --- Bouton fermer ---
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomElevatedButton(
                 label: 'Fermer',
                 onPressed: () => Get.back(),
                 backgroundColor: AppColors.primary,
                 labelColor: Colors.yellow,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -129,7 +153,7 @@ class RetraitDetailsSheet extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.black),
+          Icon(icon, size: 20, color: AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

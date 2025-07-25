@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/web.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/http_client.dart';
 import 'package:pv_deme/api/models/contact_info_model.dart';
 import 'package:pv_deme/api/models/marchand_appro_model.dart';
 import 'package:pv_deme/api/models/merchand_model.dart';
@@ -31,7 +32,7 @@ class ApiController extends GetxController {
       <RetraitHistoryModel>[].obs;
 
   RxList<StockProductModel> marchandStocks = <StockProductModel>[].obs;
-    RxList<StockProductModel> marchandFilteredStocks = <StockProductModel>[].obs;
+  RxList<StockProductModel> marchandFilteredStocks = <StockProductModel>[].obs;
 
   RxList<ApproModel> marchandAppro = <ApproModel>[].obs;
   RxList<ApproModel> marchandFilteredAppro = <ApproModel>[].obs;
@@ -76,6 +77,7 @@ class ApiController extends GetxController {
 
         final merchantController = Get.find<MerchantController>();
         merchantController.saveMerchant(merchant);
+        CustomHttpClient().isSessionExpiredHandled = false;
 
         Get.offAllNamed(AppRoutes.bottom);
         logger.d('Login successful: $data');
@@ -628,7 +630,7 @@ class ApiController extends GetxController {
                 StockProductModel.fromJson(retrait as Map<String, dynamic>),
           ),
         );
-         marchandFilteredStocks.assignAll(
+        marchandFilteredStocks.assignAll(
           data.map(
             (retrait) =>
                 StockProductModel.fromJson(retrait as Map<String, dynamic>),
@@ -670,7 +672,7 @@ class ApiController extends GetxController {
             (retrait) => ApproModel.fromJson(retrait as Map<String, dynamic>),
           ),
         );
-         marchandFilteredAppro.assignAll(
+        marchandFilteredAppro.assignAll(
           data.map(
             (retrait) => ApproModel.fromJson(retrait as Map<String, dynamic>),
           ),

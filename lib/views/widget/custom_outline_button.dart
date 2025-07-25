@@ -54,8 +54,7 @@ class CustomOutlinedButton extends StatelessWidget {
               : Text(
                 label,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  
                   color: labelColor ?? borderColor,
                 ),
               ),

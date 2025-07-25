@@ -5,15 +5,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
-import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/api/models/merchand_model.dart';
 import 'package:pv_deme/views/widget/custom_snack_bar.dart';
 
 class CustomHttpClient {
   final MerchandDataStore _merchandDataStore = MerchandDataStore();
   final storage = GetStorage();
+  bool isSessionExpiredHandled = false;
   // final ApiController _apiController = Get.find<ApiController>();
-  // final MerchantController _merchantController = Get.find<MerchantController>();  
+  final MerchantController _merchantController = Get.find<MerchantController>();  
   Future<Map<String, String>> _getHeaders({bool authRequired = false}) async {
     final headers = {
       'Content-Type': 'application/json',
@@ -34,22 +34,31 @@ class CustomHttpClient {
     return headers;
   }
 
-  Future<http.Response> _retryRequest(
-    Future<http.Response> Function() requestFn,
-  ) async {
-    final refreshSuccess = await _refreshToken();
-    if (refreshSuccess) {
-      return await requestFn(); // Retry original request
-    } else {
+Future<http.Response> _retryRequest(
+  Future<http.Response> Function() requestFn,
+) async {
+  final refreshSuccess = await _refreshToken();
+
+  if (refreshSuccess) {
+    isSessionExpiredHandled = false; // Reset le flag
+    return await requestFn(); // Refaire la requête
+  } else {
+    // Afficher le message et logout une seule fois
+    if (!isSessionExpiredHandled) {
+      isSessionExpiredHandled = true;
+
       CustomSnackBar().showError(
         'Session Expirée',
         'Votre session est expirée. Veuillez vous reconnecter.',
       );
-    // return _merchantController.logout(); // Logout if refresh fails
-      throw Exception('Échec du renouvellement du token');
-
+      _merchantController.logout();
     }
+
+    throw Exception('Échec du renouvellement du token');
   }
+}
+
+
 
   Future<bool> _refreshToken() async {
     final refreshToken = storage.read('refresh_token');

@@ -43,91 +43,83 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// Header personnalisé avec photo + infos
               const SizedBox(height: 24),
 
-              Center(
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLight, // fond vert clair
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  padding: const EdgeInsets.all(6.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(2, (index) {
-                      final bool selected = isSelected[index];
-                      final String label =
-                          index == 0
-                              ? 'Stock disponible'
-                              : 'Approvisionnements';
+              Container(
+                height: 60,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight, // fond vert clair
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(2, (index) {
+                    final bool selected = isSelected[index];
+                    final String label =
+                        index == 0 ? 'Stock disponible' : 'Approvisionnements';
 
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            for (int i = 0; i < isSelected.length; i++) {
-                              isSelected[i] = i == index;
-                            }
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: 150,
-                          height: 45,
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          decoration: BoxDecoration(
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          for (int i = 0; i < isSelected.length; i++) {
+                            isSelected[i] = i == index;
+                          }
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 150,
+                        height: 45,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        decoration: BoxDecoration(
+                          color:
+                              selected ? AppColors.primary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Coins légèrement arrondis
+                        ),
+                        child: Text(
+                          label,
+                          softWrap: false, // optionnel mais conseillé ici
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color:
                                 selected
-                                    ? AppColors.primary
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(
-                              10,
-                            ), // Coins légèrement arrondis
-                          ),
-                          child: Text(
-                            label,
-                            softWrap: false, // optionnel mais conseillé ici
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color:
-                                  selected
-                                      ? Colors.yellow
-                                      : Colors.green.shade800,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                    ? Colors.yellow
+                                    : Colors.green.shade800,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    }),
-                  ),
+                      ),
+                    );
+                  }),
                 ),
               ),
               SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: recherche,
-                  decoration: InputDecoration(
-                    label: Text("Recherche"),
-                    hintText: "Rechercher une opération",
-                    suffixIcon: Icon(Icons.search, color: AppColors.primary),
-                    border: OutlineInputBorder(),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.primary),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.primary),
-                    ),
+              TextFormField(
+                controller: recherche,
+                decoration: InputDecoration(
+                  label: Text("Recherche"),
+                  hintText: "Rechercher une opération",
+                  suffixIcon: Icon(Icons.search, color: AppColors.primary),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primary),
                   ),
-                  onChanged: searchItem,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primary),
+                  ),
                 ),
+                onChanged: searchItem,
               ),
 
               const SizedBox(height: 12),
@@ -170,45 +162,57 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       itemBuilder: (context, index) {
         final stock = apiController.marchandFilteredStocks[index];
 
-        return Column(
-          children: [
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary),
+        return GestureDetector(
+          onTap: () {
+            Get.snackbar(
+              'Info',
+              'Auccun détail disponible pour ce stock',
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Colors.white,
+              icon: const Icon(Icons.info, color: AppColors.primary),
+              colorText: AppColors.textPrimary,
+            );
+          },
+          child: Column(
+            children: [
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Image.asset(
-                    'assets/img/fruit.png',
-                    fit: BoxFit.contain,
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Image.asset(
+                      'assets/img/fruit.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  '${stock.label} (${stock.poids})',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Code: ${stock.code}',
+                ), // Utilise stock.code si dispo
+                trailing: Text(
+                  'Qté dispo : ${stock.qtePhysique}',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              title: Text(
-                '${stock.label} (${stock.poids})',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'Code: ${stock.code}',
-              ), // Utilise stock.code si dispo
-              trailing: Text(
-                'Qté dispo : ${stock.qtePhysique}',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-          ],
+              const Divider(height: 1),
+            ],
+          ),
         );
       },
     );
@@ -228,6 +232,10 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       itemCount: apiController.marchandFilteredAppro.length,
       itemBuilder: (context, index) {
         final appro = apiController.marchandFilteredAppro[index];
+        final int totalQte = appro.produits.fold(
+          0,
+          (sum, produit) => sum + produit.qte,
+        );
         return InkWell(
           onTap: () {
             Get.bottomSheet(
@@ -239,21 +247,63 @@ class _StockAndApproViewState extends State<StockAndApproView> {
               ),
             );
           },
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ListTile(
-              leading: const Icon(
-                Icons.local_shipping,
-                color: AppColors.primary,
+          child: Column(
+            children: [
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight.withAlpha(100),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primaryLight),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: const Icon(
+                      Icons.local_shipping,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  'Approvisionnement',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Reçu le :${DateFormat('dd/MM/yyyy').format(appro.date)}', // Utilise stock.code si disp
+                ), // Utilise stock.code si dispo
+                trailing: Text(
+                  'Qté total : $totalQte',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              title: Text(
-                'Reçu le ${DateFormat('dd MMM yyyy à HH:mm').format(appro.date)}',
-              ),
-            ),
+              const Divider(height: 1),
+            ],
           ),
         );
       },
     );
+  }
+
+  String formatDate(DateTime dateToFormat) {
+    DateTime date = dateToFormat; // ta date ici
+
+    String jour = DateFormat.EEEE('fr_FR').format(date); // Vendredi
+    String jourNum = DateFormat.d('fr_FR').format(date); // 14
+    String mois = DateFormat.MMMM('fr_FR').format(date); // juillet
+    String heure = DateFormat.H('fr_FR').format(date); // 12
+    String minute = DateFormat.m('fr_FR').format(date); // 14
+
+    String texteFinal = 'Reçu le $jour $jourNum $mois à $heure : ${minute}min';
+    return texteFinal;
   }
 
   void searchItem(String query) {

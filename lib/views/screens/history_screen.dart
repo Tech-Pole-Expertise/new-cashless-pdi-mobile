@@ -31,13 +31,14 @@ class HistoryScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Champs de recherche et filtre
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Champs de recherche et filtre
+              SizedBox(height: 16),
+              Row(
                 children: [
                   Expanded(
                     flex: 2,
@@ -67,8 +68,21 @@ class HistoryScreen extends StatelessWidget {
                       controller: filter,
                       readOnly: true,
                       decoration: InputDecoration(
-                        label: Text("Filtrer"),
-                        hintText: "Filtrer",
+                        label: Text(
+                          "Filtrer par date",
+                          maxLines: 1,
+                          softWrap: true,
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        hintText: "Filtrer par date ou client",
+                        hintStyle: TextStyle(
+                          // maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          color: Colors.black54,
+                        ),
                         suffixIcon: Icon(
                           Icons.filter_alt,
                           color: AppColors.primary,
@@ -97,33 +111,32 @@ class HistoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
 
-            // Liste des historiques
-            Expanded(
-              child: Obx(() {
-                if (apiController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              // Liste des historiques
+              Expanded(
+                child: Obx(() {
+                  if (apiController.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (apiController.retraitHistoryData.isEmpty) {
-                  return const Center(
-                    child: Text('Aucun historique disponible.'),
-                  );
-                }
+                  if (apiController.retraitHistoryData.isEmpty) {
+                    return const Center(
+                      child: Text('Aucun historique disponible.'),
+                    );
+                  }
 
-                return ListView.builder(
-                  itemCount: apiController.filteredRetraitHistoryData.length,
+                  return ListView.builder(
+                    itemCount: apiController.filteredRetraitHistoryData.length,
 
-                  itemBuilder: (context, index) {
-                    final retrait =
-                        apiController.filteredRetraitHistoryData[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 6.0,
-                      ),
-                      child: GestureDetector(
+                    itemBuilder: (context, index) {
+                      final retrait =
+                          apiController.filteredRetraitHistoryData[index];
+                      final int totalProduits = retrait.produits.fold(
+                        0,
+                        (sum, p) => sum + p.qte,
+                      );
+
+                      return GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
                             context: context,
@@ -140,6 +153,7 @@ class HistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Affichage du mois si nécessaire
                             if (index == 0 ||
                                 retrait.date.month !=
                                     apiController
@@ -173,91 +187,82 @@ class HistoryScreen extends StatelessWidget {
                                 ),
                               ),
 
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
+                            // Utilisation de ListTile pour le retrait
+                            // Calcul de la quantité totale à faire avant (ex. dans ton build)
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.black12),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppColors.primary),
+                                  color: AppColors.primaryLight,
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(6),
+                                  child: Icon(
+                                    Icons.shopping_cart,
+                                    color: AppColors.primary,
+                                    size: 18,
+                                  ),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              title: Text(
+                                retrait.clientName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.only(
-                                          right: 10,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: AppColors.primaryLight,
-                                          border: Border.all(
-                                            color: AppColors.primary,
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: const Icon(
-                                          Icons.shopping_cart,
-                                          size: 18,
-                                          color: AppColors.primary,
-                                        ),
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            retrait.clientName,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          Text(
-                                            "N° ${retrait.pdi.identifier}",
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black87,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                  Text(
+                                    'N° ${retrait.pdi.identifier}',
+                                    style: const TextStyle(fontSize: 12),
                                   ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        "Date du retrait",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      Text(
-                                        DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(retrait.date),
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                    ],
+                                  Text(
+                                    'Qté produits : $totalProduits',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              trailing: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Date du retrait',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  Text(
+                                    DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).format(retrait.date),
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                 ],
                               ),
                             ),
+
+                            // Ligne séparatrice
+                            const Divider(color: Colors.black12),
                           ],
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -12,21 +12,27 @@ class ApproBottomSheetDetailsSheet extends StatelessWidget {
   @override
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      child: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    return Container(
+      color: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // ✅ Titre fixe (hors scroll)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha((255 * 0.1).toInt()),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
               ),
               child: const Center(
                 child: Text(
@@ -63,11 +69,14 @@ class ApproBottomSheetDetailsSheet extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // ✅ Bouton en bas
-                    CustomElevatedButton(
-                      label: 'Fermer',
-                      onPressed: () => Get.back(),
-                      backgroundColor: AppColors.primary,
-                      labelColor: Colors.yellow,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomElevatedButton(
+                        label: 'Fermer',
+                        onPressed: () => Get.back(),
+                        backgroundColor: AppColors.primary,
+                        labelColor: Colors.yellow,
+                      ),
                     ),
                   ],
                 ),
