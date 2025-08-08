@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
@@ -15,92 +16,104 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Charger dès l'ouverture
     apiController.retraitHistory();
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Historique des retraits',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
+            fontSize: 18.sp,
           ),
         ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(10.w),
         child: SafeArea(
           child: Column(
             children: [
-              // Champs de recherche et filtre
-              SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Row(
                 children: [
                   Expanded(
                     flex: 2,
                     child: TextFormField(
                       controller: recherche,
+                      style: TextStyle(fontSize: 13.sp),
                       decoration: InputDecoration(
-                        label: Text("Recherche"),
+                        label: Text(
+                          "Recherche",
+                          style: TextStyle(fontSize: 13.sp),
+                        ),
                         hintText: "Rechercher une transaction",
+                        hintStyle: TextStyle(fontSize: 12.sp),
                         suffixIcon: Icon(
                           Icons.search,
                           color: AppColors.primary,
+                          size: 22.sp,
                         ),
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primary),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primary),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                       onChanged: searchItem,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: TextFormField(
                       controller: filter,
                       readOnly: true,
+                      style: TextStyle(fontSize: 13.sp),
                       decoration: InputDecoration(
                         label: Text(
                           "Filtrer par date",
-                          maxLines: 1,
-                          softWrap: true,
                           style: TextStyle(
+                            fontSize: 12.sp,
                             overflow: TextOverflow.ellipsis,
                             color: Colors.black54,
                           ),
                         ),
                         hintText: "Filtrer par date ou client",
                         hintStyle: TextStyle(
-                          // maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          fontSize: 12.sp,
                           color: Colors.black54,
                         ),
                         suffixIcon: Icon(
                           Icons.filter_alt,
                           color: AppColors.primary,
+                          size: 22.sp,
                         ),
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primary),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primary),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
-                          shape: const RoundedRectangleBorder(
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
+                              top: Radius.circular(20.r),
                             ),
                           ),
                           isScrollControlled: true,
@@ -111,8 +124,7 @@ class HistoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
-              // Liste des historiques
+              SizedBox(height: 10.h),
               Expanded(
                 child: Obx(() {
                   if (apiController.isLoading.value) {
@@ -120,14 +132,16 @@ class HistoryScreen extends StatelessWidget {
                   }
 
                   if (apiController.retraitHistoryData.isEmpty) {
-                    return const Center(
-                      child: Text('Aucun historique disponible.'),
+                    return Center(
+                      child: Text(
+                        'Aucun historique disponible.',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                     );
                   }
 
                   return ListView.builder(
                     itemCount: apiController.filteredRetraitHistoryData.length,
-
                     itemBuilder: (context, index) {
                       final retrait =
                           apiController.filteredRetraitHistoryData[index];
@@ -141,9 +155,9 @@ class HistoryScreen extends StatelessWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
-                            shape: const RoundedRectangleBorder(
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20),
+                                top: Radius.circular(20.r),
                               ),
                             ),
                             builder:
@@ -153,7 +167,6 @@ class HistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Affichage du mois si nécessaire
                             if (index == 0 ||
                                 retrait.date.month !=
                                     apiController
@@ -161,99 +174,108 @@ class HistoryScreen extends StatelessWidget {
                                         .date
                                         .month)
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                ),
+                                padding: EdgeInsets.symmetric(vertical: 6.h),
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.calendar_month,
-                                      size: 16,
+                                      size: 16.sp,
                                       color: AppColors.primary,
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6.w),
                                     Text(
                                       DateFormat(
                                         'MMMM yyyy',
                                         'fr_FR',
                                       ).format(retrait.date),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         color: AppColors.primary,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-
-                            // Utilisation de ListTile pour le retrait
-                            // Calcul de la quantité totale à faire avant (ex. dans ton build)
-                            ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8.h,
+                                horizontal: 4.w,
                               ),
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: AppColors.primary),
-                                  color: AppColors.primaryLight,
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(6),
-                                  child: Icon(
-                                    Icons.shopping_cart,
-                                    color: AppColors.primary,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                retrait.clientName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              subtitle: Column(
+                              child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'N° ${retrait.pdi.identifier}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  Text(
-                                    'Qté produits : $totalProduits',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              trailing: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    'Date du retrait',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black54,
+                                  // ✅ Leading : cercle avec icône
+                                  Container(
+                                    width: 40.w,
+                                    height: 40.w,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.primaryLight,
+                                      border: Border.all(
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.shopping_cart,
+                                      color: AppColors.primary,
+                                      size: 20.sp,
                                     ),
                                   ),
-                                  Text(
-                                    DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(retrait.date),
-                                    style: const TextStyle(fontSize: 12),
+                                  SizedBox(width: 10.w),
+
+                                  // ✅ Centre : Nom client + numéro + qté
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          retrait.clientName,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4.h),
+                                        Text(
+                                          'N° ${retrait.pdi.identifier}',
+                                          style: TextStyle(fontSize: 12.sp),
+                                        ),
+                                        Text(
+                                          'Qté produits : $totalProduits',
+                                          style: TextStyle(fontSize: 12.sp),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // ✅ Trailing : date du retrait
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        'Date du retrait',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4.h),
+                                      Text(
+                                        DateFormat(
+                                          'dd/MM/yyyy',
+                                        ).format(retrait.date),
+                                        style: TextStyle(fontSize: 12.sp),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
+                            Divider(color: Colors.black12, height: 1.h),
 
-                            // Ligne séparatrice
-                            const Divider(color: Colors.black12),
+                            Divider(color: Colors.black12, height: 1.h),
                           ],
                         ),
                       );
@@ -272,7 +294,6 @@ class HistoryScreen extends StatelessWidget {
     final input = query.toLowerCase();
 
     if (input.isEmpty) {
-      // Si aucun texte tapé → réinitialiser la liste filtrée
       apiController.filteredRetraitHistoryData.assignAll(
         apiController.retraitHistoryData,
       );
@@ -285,13 +306,11 @@ class HistoryScreen extends StatelessWidget {
           final clientName = retrait.clientName.toLowerCase();
           final date =
               DateFormat('dd/MM/yyyy').format(retrait.date).toLowerCase();
-
           return identifier.contains(input) ||
               clientName.contains(input) ||
               date.contains(input);
         }).toList();
 
-    // Mettre à jour la liste filtrée
     apiController.filteredRetraitHistoryData.assignAll(suggestion);
   }
 }

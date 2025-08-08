@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
@@ -18,6 +19,13 @@ class VerifyOtpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialise ScreenUtil ici pour prendre la taille écran actuelle
+    ScreenUtil.init(
+      context,
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+    );
+
     final ApiController apiController = Get.find<ApiController>();
     String? otp;
     final args = Get.arguments;
@@ -27,69 +35,69 @@ class VerifyOtpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: Size.fromHeight(90.h), // adapte la hauteur
         child: CustomAppBar(
           title: 'Vérification OTP',
           onBack: () {
-            Get.offAllNamed(AppRoutes.bottom);
+            Get.back();
           },
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            CustomOtpField(
-              operationType: 'withdraw',
-              retraitId: retraitId,
-              key: otpFieldKey,
-              text: 'Veuillez entrer le code OTP envoyé au client :',
-              otpTime: otpTime,
-              numberOfFields: 6,
-              onCodeChanged: (code) {
-                isCompleted.value = code.length == 6; // ✅ Active dès 6 chiffres
-                otp = code;
-              },
-              onSubmit: (code) {
-                otp = code;
-                isCompleted.value = code.length == 6;
-              },
-            ),
-            const SizedBox(height: 24),
-            Obx(
-              () =>
-                  isCompleted.value
-                      ? Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: SizedBox(
-                          width: Get.width,
-                          child: CustomElevatedButton(
-                            isLoading: apiController.isLoading.value,
-                            label: 'Valider',
-                            labelColor: Colors.yellow,
-                            onPressed: () async {
-                              Logger().d(
-                                'Je suis appelé aussi : ${{"retrait_id": retraitId, "otp": otp}}',
-                              );
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+          ), // padding responsive horizontal
+          child: Column(
+            children: [
+              SizedBox(height: 24.h), // hauteur responsive
+              CustomOtpField(
+                operationType: 'withdraw',
+                retraitId: retraitId,
+                key: otpFieldKey,
+                text: 'Veuillez entrer le code OTP envoyé au client :',
+                otpTime: otpTime,
+                numberOfFields: 6,
+                onCodeChanged: (code) {
+                  isCompleted.value =
+                      code.length == 6; // ✅ Active dès 6 chiffres
+                  otp = code;
+                },
+                onSubmit: (code) {
+                  otp = code;
+                  isCompleted.value = code.length == 6;
+                },
+              ),
+              SizedBox(height: 24.h), // marge responsive
+              Obx(
+                () =>
+                    isCompleted.value
+                        ? CustomElevatedButton(
+                          isLoading: apiController.isLoading.value,
+                          label: 'Valider',
+                          labelColor: Colors.yellow,
+                          onPressed: () async {
+                            Logger().d(
+                              'Je suis appelé aussi : ${{"retrait_id": retraitId, "otp": otp}}',
+                            );
 
-                              final success = await apiController
-                                  .withdrawValidation({
-                                    "retrait_id": retraitId,
-                                    "otp": otp,
-                                  });
+                            final success = await apiController
+                                .withdrawValidation({
+                                  "retrait_id": retraitId,
+                                  "otp": otp,
+                                });
 
-                              if (!success) {
-                                otpFieldKey.currentState?.clearFields();
-                                isCompleted.value = false;
-                              }
-                            },
-                            backgroundColor: AppColors.primary,
-                          ),
-                        ),
-                      )
-                      : const SizedBox.shrink(),
-            ),
-          ],
+                            if (!success) {
+                              otpFieldKey.currentState?.clearFields();
+                              isCompleted.value = false;
+                            }
+                          },
+                          backgroundColor: AppColors.primary,
+                        )
+                        : SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );

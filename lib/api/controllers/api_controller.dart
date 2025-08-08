@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/web.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/Service/token_data_controller.dart';
 import 'package:pv_deme/api/http_client.dart';
 import 'package:pv_deme/api/models/contact_info_model.dart';
 import 'package:pv_deme/api/models/marchand_appro_model.dart';
@@ -16,6 +17,7 @@ import 'package:pv_deme/api/models/pdi_model.dart';
 import 'package:pv_deme/api/models/retrait_history_model.dart';
 import 'package:pv_deme/api/models/retrait_otp_model.dart';
 import 'package:pv_deme/api/models/stock_product_model.dart';
+import 'package:pv_deme/api/models/token_model.dart';
 import 'package:pv_deme/api/providers/api_provider.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_snack_bar.dart';
@@ -72,10 +74,17 @@ class ApiController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
         final merchant = MerchandModel.fromJson(data);
         logger.d('Merchant data: ${merchant.toJson()}');
 
         final merchantController = Get.find<MerchantController>();
+        final tokenController = Get.find<TokenDataController>();
+        final Map<String, dynamic> tokenData = {
+          'token': data['access'],
+          'refreshToken': data['refresh'],
+        };
+        tokenController.saveToken(TokenModel.fromJson(tokenData));
         merchantController.saveMerchant(merchant);
         CustomHttpClient().isSessionExpiredHandled = false;
 
@@ -750,5 +759,29 @@ class ApiController extends GetxController {
   void logout() {
     final merchantController = Get.find<MerchantController>();
     merchantController.logout();
+  }
+
+  Future<bool> refreshToken() async {
+    try {
+      isLoading.value = true;
+      final tokenController = Get.find<TokenDataController>();
+      final token = tokenController.getToken();
+      final response = await _apiProvider.refreshToken({'refresh':token!.refreshToken.toString()});
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        tokenController.saveToken(TokenModel.fromJson(data));
+        logger.d('Token refreshed successfully: ${response.body}');
+        return true;
+      } else {
+        logger.d('Failed to refresh token: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      logger.d('Error refreshing token: $e');
+      return false;
+    } finally {
+      isLoading.value = false;
+     
+    }
   }
 }

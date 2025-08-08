@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomElevatedButonWithIcons extends StatelessWidget {
   final Color backgroundColor;
@@ -29,8 +30,8 @@ class CustomElevatedButonWithIcons extends StatelessWidget {
       icon:
           isLoading
               ? SizedBox(
-                width: 18,
-                height: 18,
+                width: 18.w,
+                height: 18.h,
                 child:
                     loadingIndicator ??
                     const CircularProgressIndicator(
@@ -38,20 +39,21 @@ class CustomElevatedButonWithIcons extends StatelessWidget {
                       color: Colors.white,
                     ),
               )
-              : Icon(icon, color: iconColor?? Colors.white),
-      label: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          isLoading ? "Chargement..." : label,
-          style: TextStyle(color: labelColor ?? Colors.white),
+              : Icon(icon, color: iconColor ?? Colors.white, size: 20.sp),
+      label: Text(
+        isLoading ? "Chargement..." : label,
+        style: TextStyle(
+          color: labelColor ?? Colors.white,
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
         ),
       ),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30), // 👈 Arrondi ici
+          borderRadius: BorderRadius.circular(1000.r), // Arrondi responsive
         ),
         elevation: 0,
       ),

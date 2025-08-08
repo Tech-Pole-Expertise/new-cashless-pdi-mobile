@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 ajouté
 import 'package:get/get.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
@@ -10,8 +11,7 @@ class UpdatePasswordScreen extends StatefulWidget {
   const UpdatePasswordScreen({super.key});
 
   @override
-  State<UpdatePasswordScreen> createState() =>
-      _UpdatePasswordScreenState();
+  State<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
 }
 
 class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
@@ -42,35 +42,45 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar(title: 'Changer de mot de passe'),
+      appBar: CustomAppBar(
+        title: 'Changer de mot de passe',
+        onBack: () {
+          if (step == 0) {
+            Get.back();
+          } else {
+            setState(() {
+              step = 0;
+            });
+          }
+        },
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.w), // responsive padding
             child: Form(
               key: formKey,
-
               child: Column(
                 children: [
-                  const Icon(Icons.lock_outline, size: 40),
-                  const SizedBox(height: 12),
+                  Icon(Icons.lock_outline, size: 40.sp), // responsive icon
+                  SizedBox(height: 12.h),
                   Text(
                     step == 0
                         ? 'Vérification du mot de passe'
                         : 'Nouveau mot de passe',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 18.sp, // responsive font size
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     step == 0
                         ? 'Veuillez entrer votre mot de passe actuel pour continuer.'
                         : 'Entrez et confirmez votre nouveau mot de passe.',
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
 
                   // Étape 1 : mot de passe actuel
                   if (step == 0) ...[
@@ -85,7 +95,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14.h),
                     Obx(
                       () => CustomElevatedButton(
                         isLoading: apiController.isLoading.value,
@@ -121,7 +131,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
                           CustomTextField(
                             label: 'Confirmation du nouveau mot de passe',
                             hint: 'Confirmation du mot de passe',
@@ -137,7 +147,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14.h),
                           Obx(
                             () => CustomElevatedButton(
                               isLoading: apiController.isLoading.value,
@@ -149,17 +159,17 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                           ),
                           step == 1
                               ? Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: EdgeInsets.all(8.w),
                                 child: TextButton(
                                   onPressed: () {
                                     setState(() {
                                       step = 0;
                                     });
                                   },
-                                  child: Text('Précedent'),
+                                  child: const Text('Précedent'),
                                 ),
                               )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                         ],
                       ),
                     ),

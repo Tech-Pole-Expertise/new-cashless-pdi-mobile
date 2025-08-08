@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 Important
 import 'package:pv_deme/constant/app_color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -28,8 +29,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             Center(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -53,17 +54,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: 40.w,
+                      height: 40.h,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.primaryLight,
                         border: Border.all(color: AppColors.primaryLight),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back,
                         color: AppColors.primary,
-                        size: 24,
+                        size: 24.sp,
                       ),
                     ),
                   ),

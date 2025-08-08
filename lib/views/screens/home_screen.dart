@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈
 import 'package:get/get.dart';
 import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_outline_button.dart';
-import 'package:pv_deme/views/widget/custom_text_field.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/views/widget/phone_entry_bottom_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final TextEditingController pdiPhoneController = TextEditingController();
   final ApiController apiController = Get.find<ApiController>();
-  final GlobalKey<FormState> _key = GlobalKey();
   final homeController = Get.put(HomeController());
 
   @override
@@ -28,24 +27,22 @@ class HomeScreen extends StatelessWidget {
       return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildUserHeader(merchantStat),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.all(  12.0),
-                  child: _buildStatsCards(merchantStat),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: _buildRetraitSection(context),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildUserHeader(merchantStat),
+              // SizedBox(height: 6.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                child: _buildStatsCards(merchantStat),
+              ),
+              // SizedBox(height: 8.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                child: _buildRetraitSection(context),
+              ),
+            ],
           ),
         ),
       );
@@ -55,30 +52,33 @@ class HomeScreen extends StatelessWidget {
   Widget _buildUserHeader(merchantStat) {
     return Row(
       children: [
-        const CircleAvatar(
-          radius: 40,
+        CircleAvatar(
+          radius: 40.r,
           backgroundColor: Colors.transparent,
-          backgroundImage: AssetImage('assets/img/pro.png'),
+          backgroundImage: const AssetImage('assets/img/pro.png'),
         ),
-        RichText(
-          text: TextSpan(
-            style: const TextStyle(color: Colors.black, fontSize: 14),
-            children: [
-              TextSpan(
-                text:
-                    merchantStat != null
-                        ? '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}\n'
-                        : 'Utilisateur inconnu\n',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        // SizedBox(width: 12.w),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: TextStyle(color: Colors.black, fontSize: 14.sp),
+              children: [
+                TextSpan(
+                  text:
+                      merchantStat != null
+                          ? '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}\n'
+                          : 'Utilisateur inconnu\n',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              TextSpan(
-                text: merchantStat?.phone ?? 'Téléphone indisponible',
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
+                TextSpan(
+                  text: merchantStat?.phone ?? 'Téléphone indisponible',
+                  style: TextStyle(fontSize: 14.sp),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -114,46 +114,66 @@ class HomeScreen extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryLight,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       child: Row(
         children: [
+          // Icône dans un cercle coloré soft
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(4),
+              color: color.withAlpha((255 * 0.1).toInt()),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.primaryLight, size: 16),
+            child: Icon(icon, color: color, size: 20.sp),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 16.w),
+
+          // Texte
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title),
-                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 6.h),
                 Text(
                   "Total : $count",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-                Text(subtitle, style: const TextStyle(fontSize: 12)),
+                SizedBox(height: 2.h),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+                ),
               ],
             ),
           ),
-          Image.asset('assets/img/group.png', height: 40),
+
+          // Image ou graphique
+          Image.asset(
+            'assets/img/group.png',
+            height: 40.h,
+            width: 40.w,
+            fit: BoxFit.contain,
+          ),
         ],
       ),
     );
@@ -161,125 +181,48 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRetraitSection(BuildContext context) {
     return Container(
-      height: 300,
-      padding: const EdgeInsets.all(20),
+      height: 300.h,
+      padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Veuillez sélectionner\nune méthode de retrait',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           CustomElevatedButton(
             label: "Scanner le QR code",
             onPressed: () => Get.toNamed(AppRoutes.scan),
             backgroundColor: Colors.green[900]!,
             labelColor: Colors.yellow,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           CustomOutlinedButton(
             label: "Entrer le numéro de la personne",
-            onPressed: () => _showPhoneEntryBottomSheet(context),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
+                  ),
+                ),
+                builder:
+                    (context) =>
+                        PhoneEntryBottomSheet(showLoadingIndicator: false),
+              );
+            },
             borderColor: AppColors.primary,
             labelColor: Colors.green[900],
           ),
         ],
       ),
-    );
-  }
-
-  void _showPhoneEntryBottomSheet(BuildContext context) {
-    pdiPhoneController.clear();
-    _key.currentState?.reset();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            child: Form(
-              key: _key,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Veuillez saisir le numéro de téléphone de la personne",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    controller: pdiPhoneController,
-                    label: 'Numéro de téléphone',
-                    isPassword: false,
-                    hint: '74 47 56 74',
-                    keyboardType: TextInputType.number,
-                    formatAsPhoneNumber: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Veuillez saisir un numéro de téléphone valide';
-                      }
-                      if (value.replaceAll(' ', '').length != 8) {
-                        return 'Le numéro doit contenir 8 chiffres';
-                      }
-                      return null;
-                    },
-                    suffixIcon: IconButton(
-                      onPressed: () => Get.toNamed(AppRoutes.scan),
-                      icon: const Icon(Icons.phone_android),
-                    ),
-                    prefix: const Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Text(
-                        '+226',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Obx(
-                    () => CustomElevatedButton(
-                      label: 'Rechercher',
-                      labelColor: Colors.yellow,
-                      isLoading: apiController.isLoading.value,
-                      onPressed: () async {
-                        if (!_key.currentState!.validate()) return;
-
-                        final success = await apiController.getPdiProfile(
-                          '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
-                        );
-                        if (success) {
-                          Get.back();
-                          Get.toNamed(
-                            AppRoutes.panier,
-                            arguments: {'pdi': apiController.pdiProfile.value},
-                          );
-                        }
-                      },
-                      backgroundColor: AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

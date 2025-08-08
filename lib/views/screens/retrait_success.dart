@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
@@ -13,58 +14,55 @@ class RetraitSuccessScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF004D40),
-      // ton appbar avec profil
-      // Vert foncé
-      body: Center(
-        child: SafeArea(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // Bouton retour
-              const SizedBox(height: 8),
-        
-              // Logo centré (remplace par ton image si nécessaire)
-              Center(
-                child: Image.asset(
-                  'assets/img/logo.png', // ✅ à adapter selon ton asset
-                ),
-              ),
-        
-              // Icône check
-              const Icon(
-                Icons.check_circle,
-                color: Color(0xFFCCFF00), // vert clair fluo
-                size: 100,
-              ),
-              const SizedBox(height: 24),
-        
-              // Message principal
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-        
-              // Bouton en bas
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: CustomElevatedButton(
-                    label: "Retourner sur accueil",
-                    labelColor: AppColors.primary,
-                    onPressed: () {
-                      Get.offAllNamed(AppRoutes.bottom);
-                    },
-                    backgroundColor: const Color(0xFFE0F2F1),
+              SizedBox(height: 40.h),
+
+              // Logo en haut
+              Image.asset('assets/img/logo.png', width: 250.w),
+
+              SizedBox(height: 60.h),
+
+              // Icône et texte au centre
+              Column(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: const Color(0xFFCCFF00),
+                    size: 100.w,
                   ),
+                  SizedBox(height: 14.h),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 35.h),
+              // Bouton en bas
+              SizedBox(
+                width: double.infinity,
+                child: CustomElevatedButton(
+                  label: "Retourner sur accueil",
+                  labelColor: AppColors.primary,
+                  onPressed: () {
+                    Get.offAllNamed(AppRoutes.bottom);
+                  },
+                  backgroundColor: const Color(0xFFE0F2F1),
                 ),
               ),
-              const SizedBox(height: 30),
+
+              SizedBox(height: 24.h),
             ],
           ),
         ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 Important
+
 
 class CustomCircleProgressBar extends StatelessWidget {
   final double size;
@@ -16,8 +18,8 @@ class CustomCircleProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size,
-      height: size,
+      width: size.w,
+      height: size.h,
       child: Stack(
         alignment: Alignment.center,
         children: [

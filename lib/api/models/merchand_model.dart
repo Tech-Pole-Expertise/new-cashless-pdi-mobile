@@ -1,6 +1,5 @@
 class MerchandModel {
-  final String token;
-  final String refreshToken;
+
   final String username;
   final String firstName;
   final String lastName;
@@ -9,8 +8,7 @@ class MerchandModel {
   final bool isMerchand;
 
   MerchandModel( {
-    required this.token,
-    required this.refreshToken,
+    
     required this.username,
     required this.firstName,
     required this.lastName,
@@ -21,8 +19,7 @@ class MerchandModel {
 
   factory MerchandModel.fromJson(Map<String,dynamic>json){
     return MerchandModel(
-      token: json['access'] ?? '',
-      refreshToken: json['refresh'] ?? '',
+     
       username: json['username'] ?? '',
       firstName: json['first_name'] ?? '',
       lastName: json['last_name'] ?? '',
@@ -33,8 +30,7 @@ class MerchandModel {
   }
   Map<String, dynamic> toJson() {
     return {
-      'access': token,
-      'refresh': refreshToken,
+     
       'username': username,
       'first_name': firstName,
       'last_name': lastName,

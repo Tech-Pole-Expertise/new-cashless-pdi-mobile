@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +13,7 @@ import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
 import 'package:pv_deme/views/widget/custom_snack_bar.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';
 import 'package:pv_deme/views/widget/elevated_button_with_icons.dart';
+import 'package:pv_deme/views/widget/phone_entry_bottom_sheet.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class ScannerScreen extends StatefulWidget {
@@ -28,6 +30,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   bool isProcessing = false;
   QRViewController? controller;
   final ApiController apiController = Get.find<ApiController>();
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +49,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               'L\'accès à la caméra est requis pour scanner le QR code.',
           confirm: CustomElevatedButton(
             label: 'Fermer',
-            onPressed: () {},
+            onPressed: () => Get.back(),
             backgroundColor: AppColors.error,
           ),
         );
@@ -54,10 +57,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   controller?.dispose();
+  //   super.dispose();
+  // }
 
   void stopScannerAndExit() async {
     await controller?.pauseCamera();
@@ -67,10 +71,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   void _onQRViewCreated(QRViewController qrController) {
     controller = qrController;
-    // Attendre un court moment pour laisser le temps au contrôleur de s'initialiser
-    // Future.delayed(const Duration(milliseconds: 300), () {
-    //   getFlashState();
-    // });
     controller?.resumeCamera();
     Logger().d('QR CONTROLLER initiée');
 
@@ -98,14 +98,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
           "QR Code non pris en charge",
         );
         Future.delayed(const Duration(seconds: 5), () {
-          controller?.resumeCamera(); // Reprendre caméra
-        }); // Reprendre la caméra
+          controller?.resumeCamera();
+        });
         return;
       }
 
       if (data.containsKey('phone')) {
-        // ✅ Afficher le loader
-
         final success = await apiController.getPdiProfile(
           '${data['phone'].replaceAll(' ', '')}',
         );
@@ -125,27 +123,25 @@ class _ScannerScreenState extends State<ScannerScreen> {
             barrierDismissible: false,
           );
           Future.delayed(const Duration(seconds: 3), () {
-            (Get.isDialogOpen ?? false);
-            Get.back();
+            if (Get.isDialogOpen ?? false) Get.back();
             controller?.stopCamera();
             Get.toNamed(
               AppRoutes.panier,
               arguments: {'pdi': apiController.pdiProfile.value},
-            ); // Reprendre caméra
+            );
           });
         }
         Future.delayed(const Duration(seconds: 5), () {
-          controller?.resumeCamera(); // Reprendre caméra
+          controller?.resumeCamera();
         });
       }
     } catch (e) {
       Logger().e('Erreur lors du scan : $e');
 
-      CustomSnackBar().showError('Erreur', "Une erreur inconnu est survenue");
+      CustomSnackBar().showError('Erreur', "Une erreur inconnue est survenue");
 
-      //  Reprise après erreur
       Future.delayed(const Duration(seconds: 5), () {
-        controller?.resumeCamera(); // Reprendre caméra
+        controller?.resumeCamera();
       });
     } finally {
       isProcessing = false;
@@ -160,7 +156,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     }
   }
 
-  void _toggleFash() async {
+  void _toggleFlash() async {
     if (controller == null) return;
 
     try {
@@ -189,40 +185,42 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final spacingHeight = screenHeight * 0.03;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'Scanner le qr code'),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+      appBar: const CustomAppBar(title: 'Scanner le qr code'),
+      body: Padding(
+        padding: EdgeInsets.all(8.w), // Responsive padding
+        child: SingleChildScrollView(
+          // <-- Ajouté ici
           child: Column(
             children: [
-              const SizedBox(height: 30),
+              SizedBox(height: spacingHeight.clamp(10.0, 30.0)),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Text(
                   'Placer le QRCODE dans le cadre ci-dessous pour une lecture automatique.',
-                  style: TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center, // ✅ Texte centré
+                  style: TextStyle(fontSize: 16.sp),
+                  textAlign: TextAlign.center,
                 ),
               ),
-
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.w),
                 child: Container(
-                  width: 280,
-                  height: 280,
+                  width: 280.w,
+                  height: 280.w,
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.primary),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.w),
                     child: QRView(
                       overlay: QrScannerOverlayShape(
                         borderColor: AppColors.primary,
-                        borderWidth: 5,
-                        borderRadius: 12,
+                        borderWidth: 5.w,
+                        borderRadius: 12.r,
                       ),
                       key: qrKey,
                       onQRViewCreated: _onQRViewCreated,
@@ -230,10 +228,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-
+              SizedBox(height: 14.h),
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.w),
                 child: SizedBox(
                   width: Get.width,
                   child: CustomElevatedButonWithIcons(
@@ -243,27 +240,47 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     label:
                         isFlashOn ? 'Désactiver le Flash' : 'Activer le Flash',
                     icon: isFlashOn ? Icons.flash_on : Icons.flash_off,
-                    onPressed: () async {
-                      _toggleFash();
-                    },
+                    onPressed: _toggleFlash,
                   ),
                 ),
               ),
-              // const SizedBox(height: 24),
               InkWell(
-                onTap: () => Get.back(),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20.r),
+                      ),
+                    ),
+                    builder:
+                        (_) =>
+                            PhoneEntryBottomSheet(showLoadingIndicator: true),
+                  ).then((_) {
+                    // Le bottom sheet est fermé → on relance la caméra
+                    controller?.resumeCamera();
+                  });
+
+                  // Juste avant de l'ouvrir, on met la caméra en pause :
+                  controller?.pauseCamera();
+                },
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.w),
                   child: RichText(
                     text: TextSpan(
                       text: 'Des problèmes avec le scan? ',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14.sp,
+                      ),
                       children: [
                         TextSpan(
                           text: 'Saisir manuellement',
                           style: TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ],

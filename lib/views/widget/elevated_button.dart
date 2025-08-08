@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // ⬅️ ajouté
 
 class CustomElevatedButton extends StatelessWidget {
   final String label;
@@ -6,6 +7,7 @@ class CustomElevatedButton extends StatelessWidget {
   final Color backgroundColor;
   final Color? labelColor;
   final bool isLoading;
+  final bool showLoadingIndicator;
   final Widget? loadingIndicator;
 
   const CustomElevatedButton({
@@ -15,6 +17,7 @@ class CustomElevatedButton extends StatelessWidget {
     required this.backgroundColor,
     this.labelColor,
     this.isLoading = false,
+    this.showLoadingIndicator = true,
     this.loadingIndicator,
   });
 
@@ -26,9 +29,9 @@ class CustomElevatedButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(1000), // 👈 Full border radius
+          borderRadius: BorderRadius.circular(1000.r),
         ),
-        minimumSize: const Size(double.infinity, 45),
+        minimumSize: Size(double.infinity, 45.h),
         elevation: 0,
       ),
       child:
@@ -36,23 +39,27 @@ class CustomElevatedButton extends StatelessWidget {
               ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 18,
-                    height: 18,
-                    child:
-                        loadingIndicator ??
-                        const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                        ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text("Chargement..."),
+                  if (showLoadingIndicator)
+                    SizedBox(
+                      width: 18.w,
+                      height: 18.w,
+                      child:
+                          loadingIndicator ??
+                          const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.black,
+                          ),
+                    ),
+                  SizedBox(width: 10.w),
+                  Text("Chargement...", style: TextStyle(fontSize: 14.sp)),
                 ],
               )
               : Text(
                 label,
-                style: TextStyle(color: labelColor ?? Colors.black),
+                style: TextStyle(
+                  color: labelColor ?? Colors.black,
+                  fontSize: 16.sp,
+                ),
               ),
     );
   }

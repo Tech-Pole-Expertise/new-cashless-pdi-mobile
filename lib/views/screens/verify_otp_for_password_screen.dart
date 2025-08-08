@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
@@ -41,7 +42,7 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 24),
+          SizedBox(height: 14.h),
           CustomOtpField(
             operationType: operationType,
             key: otpFieldKey,
@@ -60,7 +61,7 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
               isCompleted.value = code.length == 6;
             },
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           Obx(
             () =>
                 isCompleted.value
@@ -102,6 +103,7 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
                     )
                     : const SizedBox.shrink(),
           ),
+         
         ],
       ),
     );

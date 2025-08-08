@@ -21,12 +21,12 @@ class ApiProvider {
     );
   }
 
-  Future<http.Response> checkToken() async {
-    return await _client.get(ApiRoutes.checkToken, authRequired: false);
-  }
+  // Future<http.Response> checkToken() async {
+  //   return await _client.get(ApiRoutes.checkToken, authRequired: false);
+  // }
 
-  Future<http.Response> refreshToken() async {
-    return await _client.get(ApiRoutes.refreshToken, authRequired: false);
+  Future<http.Response> refreshToken(Map<String, dynamic> payload) async {
+    return await _client.post(ApiRoutes.refreshToken, data:payload, authRequired: false);
   }
 
   // Reset Password
@@ -140,4 +140,5 @@ class ApiProvider {
     Future<http.Response> getCallCenterInfos() async {
     return await _client.get(ApiRoutes.getContactInfos, authRequired: true);
   }
+
 }

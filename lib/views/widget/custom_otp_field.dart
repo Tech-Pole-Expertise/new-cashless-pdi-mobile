@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 ajouté
 import 'package:get/get.dart';
 import 'package:logger/web.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/routes/app_routes.dart';
+import 'package:pv_deme/views/widget/custom_outline_button.dart';
 
 class CustomOtpField extends StatefulWidget {
   final int numberOfFields;
@@ -135,21 +138,27 @@ class CustomOtpFieldState extends State<CustomOtpField> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30),
-        Icon(Icons.lock_open_rounded, size: 48, color: AppColors.primary),
-        const SizedBox(height: 16),
+        SizedBox(height: 30.h), // responsive height
+        Icon(
+          Icons.lock_open_rounded,
+          size: 48.w,
+          color: AppColors.primary,
+        ), // icon size responsive
+        SizedBox(height: 16.h),
         Text(
           widget.text,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(widget.numberOfFields, (index) {
             return Container(
-              width: 40,
-              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: 40.w, // responsive width
+              margin: EdgeInsets.symmetric(
+                horizontal: 6.w,
+              ), // responsive margin
               child: KeyboardListener(
                 focusNode: FocusNode(), // 👈 focus temporaire et anonyme
                 onKeyEvent: (KeyEvent event) {
@@ -161,28 +170,29 @@ class CustomOtpFieldState extends State<CustomOtpField> {
                     controllers[index - 1].clear();
                   }
                 },
-
                 child: TextFormField(
                   controller: controllers[index],
                   focusNode: focusNodes[index],
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: 18.sp, // responsive font size
                     fontWeight: FontWeight.bold,
                   ),
                   maxLength: 1,
                   decoration: InputDecoration(
                     counterText: '',
-                    contentPadding: const EdgeInsets.all(12),
+                    contentPadding: EdgeInsets.all(12.w), // responsive padding
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        8.r,
+                      ), // responsive radius
                       borderSide: const BorderSide(color: AppColors.primary),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
                         color: AppColors.primary,
                         width: 2,
@@ -195,23 +205,24 @@ class CustomOtpFieldState extends State<CustomOtpField> {
             );
           }),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
 
         remainingSeconds > 0
             ? Text(
               'OTP expire dans $remainingSeconds secondes',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
             )
             : (widget.operationType == 'reset' ||
                 widget.operationType == 'change')
-            ? Text(
-              'Votre OTP est expiré.\nPour plus de sécurité, reprenez toute l\'opération.',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
+            ? CustomOutlinedButton(
+              label: 'Reprendre',
+              onPressed: () {
+                widget.operationType == 'reset'
+                    ? Get.offAllNamed(AppRoutes.resetPassword)
+                    : Get.offAllNamed(AppRoutes.profile);
+              },
+              borderColor: AppColors.primary,
+              labelColor: AppColors.primary,
             )
             : Obx(
               () => InkWell(
@@ -223,13 +234,13 @@ class CustomOtpFieldState extends State<CustomOtpField> {
                   style: TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 15.sp,
                   ),
                 ),
               ),
             ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
       ],
     );
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 Important
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
+import 'package:pv_deme/api/Service/token_data_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
@@ -17,7 +19,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final MerchandDataStore merchandDataStore = MerchandDataStore();
-  final MerchantController merchantController = Get.find<MerchantController>();
+  final MerchantController merchantController = Get.put(MerchantController());
+  final TokenDataController tokenController = Get.find<TokenDataController>();
+
   bool isLoading = true;
   bool showStartButton = false;
 
@@ -28,14 +32,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadMerchantAndRedirect() async {
-    merchantController.loadMerchant();
-
     await Future.delayed(const Duration(seconds: 3));
+    final token = tokenController.getToken();
 
-    final merchant = merchantController.merchant.value;
-
-    if (merchant != null) {
-      Logger().d('Merchant found: ${merchant.token}');
+    if (token != null && token.token.isNotEmpty) {
+      Logger().d('Merchant found: ${token.token}');
       Get.offAllNamed(AppRoutes.bottom);
     } else {
       Logger().d('No merchant found');
@@ -58,22 +59,19 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-
           children: [
-            const Spacer(flex: 1), // 🔼 plus petit => logo monte
-            // Logo plus haut
+            const Spacer(flex: 1),
+            // Logo
             Image.asset('assets/img/logo.png'),
-
-            const Spacer(flex: 5), // 🔽 plus grand => bouton descend
-            // Bouton ou loader
+            const Spacer(flex: 5),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              padding: EdgeInsets.symmetric(horizontal: 18.w),
               child:
                   isLoading
                       ? CustomCircleProgressBar(
                         color: Colors.white,
                         backgroundColor: AppColors.primary,
-                        strokeWidth: 5,
+                        strokeWidth: 5.w, // Responsive width
                       )
                       : showStartButton
                       ? CustomElevatedButton(
@@ -82,16 +80,14 @@ class _SplashScreenState extends State<SplashScreen> {
                         onPressed: handleStart,
                         backgroundColor: AppColors.secondary,
                       )
-                      : const SizedBox(),
+                      : SizedBox(height: 10.h),
             ),
-
-            const Spacer(flex: 2), // garde espace en bas
-            // Texte collé en bas
+            const Spacer(flex: 2),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding: EdgeInsets.only(bottom: 8.h),
               child: Text(
                 'Copyright © Tech Pôle Expertise 2025. All Rights Reserved',
-                style: const TextStyle(color: Colors.white, fontSize: 10),
+                style: TextStyle(color: Colors.white, fontSize: 10.sp),
                 textAlign: TextAlign.center,
               ),
             ),

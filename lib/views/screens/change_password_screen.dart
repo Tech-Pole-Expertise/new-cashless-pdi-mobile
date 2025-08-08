@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/widget/custom_app_bar.dart';
 import 'package:pv_deme/views/widget/custom_text_field.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';
 // à adapter
@@ -48,22 +50,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          action.toString() != 'reset'
-              ? "Changer le mot de passe"
-              : "Rénitialiser le mot de passe",
-        ),
+      appBar: CustomAppBar(
+        title:
+            action.toString() != 'reset'
+                ? "Changer le mot de passe"
+                : "Rénitialiser le mot de passe",
       ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.sp),
         child: Form(
           key: _formKey,
 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Center(
                 child: Icon(
                   action.toString() != 'reset'
@@ -73,14 +75,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               const Center(
                 child: Text(
                   "Définir un nouveau mot de passe",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               CustomTextField(
                 label: "Nouveau mot de passe",
                 controller: newPasswordController,
@@ -100,7 +102,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 regexPattern: r'^.{6,}$',
                 validationMessage: "Minimum 6 caractères",
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               CustomTextField(
                 label: "Confirmer le mot de passe",
                 controller: confirmPasswordController,
@@ -128,7 +130,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 regexPattern: r'^.{6,}$',
                 validationMessage: "Veuillez confirmer le mot de passe",
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               Obx(
                 () => CustomElevatedButton(
                   label:

@@ -6,7 +6,7 @@ class ApiRoutes {
   );
     static Uri refreshToken = Uri.https(
     _base,
-    '/merchant-api/token-refresh/',
+    '/merchant-api/auth/token-refresh/',
   );
   static Uri login = Uri.https(_base, '/merchant-api/auth/login/');
   static Uri initPasswordChange = Uri.https(
@@ -62,4 +62,5 @@ class ApiRoutes {
   /// Pour getPdiProfile, on doit construire dynamiquement avec l'ID
   static Uri getPdiProfile(String idPdi) =>
       Uri.https(_base, '/merchant-api/get-pdi/$idPdi/');
+
 }

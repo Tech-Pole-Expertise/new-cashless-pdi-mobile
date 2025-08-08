@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomOutlinedButton extends StatelessWidget {
   final String label;
@@ -22,15 +23,19 @@ class CustomOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color effectiveLabelColor = labelColor ?? borderColor;
+
     return OutlinedButton(
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: borderColor, width: 1.5),
-        foregroundColor: labelColor ?? borderColor,
+        side: BorderSide(color: borderColor, width: 1.5.w),
+        foregroundColor: effectiveLabelColor,
         backgroundColor: backgroundColor,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        minimumSize: const Size(double.infinity, 0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(1000.r),
+        ),
+        minimumSize: Size(double.infinity, 45.h),
+        padding: EdgeInsets.zero, // Aligné avec ElevatedButton
       ),
       child:
           isLoading
@@ -38,25 +43,28 @@ class CustomOutlinedButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 18,
-                    height: 18,
+                    width: 18.w,
+                    height: 18.w,
                     child:
                         loadingIndicator ??
-                        const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
+                        CircularProgressIndicator(
+                          strokeWidth: 2.w,
+                          color: effectiveLabelColor,
                         ),
                   ),
-                  const SizedBox(width: 10),
-                  const Text("Chargement..."),
+                  SizedBox(width: 10.w),
+                  Text(
+                    "Chargement...",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: effectiveLabelColor,
+                    ),
+                  ),
                 ],
               )
               : Text(
                 label,
-                style: TextStyle(
-                  
-                  color: labelColor ?? borderColor,
-                ),
+                style: TextStyle(fontSize: 16.sp, color: effectiveLabelColor),
               ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // ⬅️ Ajouté
 import 'package:pv_deme/constant/app_color.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -17,7 +18,7 @@ class CustomTextField extends StatefulWidget {
   final String? regexPattern;
   final String? validationMessage;
   final String? Function(String?)? validator;
-  final bool formatAsPhoneNumber; // Nouveau
+  final bool formatAsPhoneNumber;
 
   const CustomTextField({
     super.key,
@@ -35,7 +36,7 @@ class CustomTextField extends StatefulWidget {
     this.regexPattern,
     this.validationMessage,
     this.validator,
-    this.formatAsPhoneNumber = false, // Nouveau
+    this.formatAsPhoneNumber = false,
   });
 
   @override
@@ -87,7 +88,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         TextInputFormatter.withFunction((oldValue, newValue) {
           final digitsOnly = newValue.text.replaceAll(RegExp(r'\D'), '');
           if (digitsOnly.length > 8) {
-            return oldValue; // Bloquer plus de 8 chiffres
+            return oldValue;
           }
 
           final formatted = _formatPhoneNumber(digitsOnly);
@@ -105,32 +106,52 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: _obscureText,
       readOnly: widget.isReadOnly,
       maxLines: widget.maxLines ?? 1,
-      maxLength: widget.formatAsPhoneNumber ? null : widget.maxLength, // <== ici
+      maxLength: widget.formatAsPhoneNumber ? null : widget.maxLength,
       validator: widget.validator ?? _defaultValidator,
       inputFormatters: inputFormatters,
+      style: TextStyle(fontSize: 16.sp), // ✅ Texte principal
       decoration: InputDecoration(
         labelText: widget.label,
+        labelStyle: TextStyle(fontSize: 15.sp), // ✅ Label
         hintText: widget.hint,
+        hintStyle: TextStyle(fontSize: 14.sp), // ✅ Hint
         prefix: widget.prefix,
-        prefixIcon: widget.prefixIcon,
-        suffixIcon: widget.isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )
-            : widget.suffixIcon,
-        border: const OutlineInputBorder(),
-        enabledBorder: const OutlineInputBorder(
+        prefixIcon:
+            widget.prefixIcon != null
+                ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: IconTheme(
+                    data: IconThemeData(size: 20.sp),
+                    child: widget.prefixIcon!,
+                  ),
+                )
+                : null,
+        suffixIcon:
+            widget.isPassword
+                ? IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    size: 20.sp, // ✅ Icon taille
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                )
+                : widget.suffixIcon,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16.w,
+          vertical: 12.h,
+        ), // ✅ padding interne
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+        enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8.r),
         ),
-        focusedBorder: const OutlineInputBorder(
+        focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: AppColors.primary),
+          borderRadius: BorderRadius.circular(8.r),
         ),
       ),
     );

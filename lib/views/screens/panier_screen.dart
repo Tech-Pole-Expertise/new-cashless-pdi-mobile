@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/api/models/panier_model.dart';
 import 'package:pv_deme/api/models/pdi_model.dart';
@@ -19,7 +19,6 @@ class PanierScreen extends StatefulWidget {
 
 class _PanierScreenState extends State<PanierScreen> {
   final GlobalKey<FormState> key = GlobalKey<FormState>();
-
   List<PanierProduitModel> panierProduits = [];
   PdiModel? pdi;
   String? errorMessage;
@@ -29,56 +28,40 @@ class _PanierScreenState extends State<PanierScreen> {
     final args = Get.arguments;
     pdi = args['pdi'] as PdiModel?;
     panierProduits = pdi?.possessions ?? [];
-
     for (var produit in panierProduits) {
       produit.retrait = '0';
     }
-
     super.initState();
   }
 
   bool validatePanier() {
     final selection = panierProduits.where((p) => p.isSelected).toList();
-
     if (selection.isEmpty) {
       setState(() {
         errorMessage = '❗ Veuillez sélectionner au moins un produit.';
       });
       return false;
     }
-
     for (var produit in selection) {
       final val = produit.retrait;
       final quantity = int.tryParse(val);
-
       if (val.isEmpty) {
-        setState(() {
-          errorMessage =
-              '❗ Le champ retrait du produit "${produit.label}" est vide.';
-        });
+        errorMessage =
+            '❗ Le champ retrait du produit "${produit.label}" est vide.';
         return false;
       }
-
       if (quantity == null || quantity < 1) {
-        setState(() {
-          errorMessage =
-              '❗ La quantité du produit "${produit.label}" doit être supérieure à zéro.';
-        });
+        errorMessage =
+            '❗ La quantité du produit "${produit.label}" doit être > 0.';
         return false;
       }
-
       if (quantity > produit.quantite) {
-        setState(() {
-          errorMessage =
-              '❗ La quantité demandée pour "${produit.label}" dépasse le stock disponible (${produit.quantite}).';
-        });
+        errorMessage =
+            '❗ La quantité pour "${produit.label}" dépasse le stock disponible (${produit.quantite}).';
         return false;
       }
     }
-
-    setState(() {
-      errorMessage = null;
-    });
+    errorMessage = null;
     return true;
   }
 
@@ -89,64 +72,61 @@ class _PanierScreenState extends State<PanierScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: Size.fromHeight(90.h),
         child: CustomAppBar(
           title: 'Panier disponible',
-          onBack: () {
-            Get.offAllNamed(AppRoutes.bottom);
-          },
+          onBack: () => Get.offAllNamed(AppRoutes.bottom),
         ),
       ),
       body:
           panierProduits.isEmpty
               ? EmptyPanierScreen(pdi: pdi!)
-              : Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: [
-                        Text(
-                          '${pdi!.firstname.toUpperCase()} ${pdi!.lastname}',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'N°${pdi!.identifier}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+              : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Column(
+                  children: [
+                    SizedBox(height: 16.h),
+                    Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            '${pdi!.firstname.toUpperCase()} ${pdi!.lastname}',
+                            style: TextStyle(fontSize: 16.sp),
                           ),
-                        ),
-                      ],
+                          Text(
+                            'N°${pdi!.identifier}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 26),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: panierProduits.length,
-                      itemBuilder: (context, index) {
-                        final produit = panierProduits[index];
-                        int currentQty = int.tryParse(produit.retrait) ?? 0;
+                    SizedBox(height: 20.h),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: panierProduits.length,
+                        itemBuilder: (context, index) {
+                          final produit = panierProduits[index];
+                          int currentQty = int.tryParse(produit.retrait) ?? 0;
 
-                        return Column(
-                          children: [
-                            ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 4,
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6.h),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 6.h,
+                                horizontal: 12.w,
                               ),
                               leading: Container(
-                                width: 40,
-                                height: 40,
+                                width: 40.w,
+                                height: 40.w,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(color: AppColors.primary),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(6),
+                                  padding: EdgeInsets.all(6.w),
                                   child: Image.asset(
                                     'assets/img/fruit.png',
                                     fit: BoxFit.contain,
@@ -155,15 +135,16 @@ class _PanierScreenState extends State<PanierScreen> {
                               ),
                               title: Text(
                                 '${produit.label} (${produit.poids})',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 14.sp,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
-                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               subtitle: Text(
                                 'Quantité totale : ${produit.quantite}',
+                                style: TextStyle(fontSize: 12.sp),
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -179,14 +160,15 @@ class _PanierScreenState extends State<PanierScreen> {
                                     },
                                     isEnabled: currentQty > 0,
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8.w),
                                   Text(
                                     '$currentQty',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8.w),
                                   _buildQtyButton(
                                     icon: Icons.add,
                                     onPressed: () {
@@ -201,70 +183,58 @@ class _PanierScreenState extends State<PanierScreen> {
                                 ],
                               ),
                             ),
-                            const Divider(height: 1),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  if (errorMessage != null && errorMessage!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        errorMessage!,
-                        style: TextStyle(color: AppColors.error),
+                          );
+                        },
                       ),
                     ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Obx(() {
-                      return CustomElevatedButton(
-                        label:
-                            apiController.isLoading.value
-                                ? "Traitement en cours..."
-                                : "Confirmer le retrait",
-                        labelColor: Colors.yellow,
-                        onPressed:
-                            apiController.isLoading.value
-                                ? null
-                                : () async {
-                                  if (!validatePanier()) return;
-
-                                  final List<PanierProduitModel> selection =
-                                      panierProduits
-                                          .where((p) => p.isSelected)
-                                          .toList();
-
-                                  final retraitList =
-                                      selection
-                                          .map(
-                                            (produit) =>
-                                                produit.toRetraitModel(),
-                                          )
-                                          .toList();
-
-                                  Logger().d({
-                                    'phone':
-                                        '+226${pdi!.phone.replaceAll(' ', '')}',
-                                    'produits':
-                                        retraitList
-                                            .map((r) => r.toJson())
-                                            .toList(),
-                                  });
-
-                                  await apiController.initWithdraw({
-                                    'phone': pdi!.phone,
-                                    'produits':
-                                        retraitList
-                                            .map((r) => r.toJson())
-                                            .toList(),
-                                  });
-                                },
-                        backgroundColor: AppColors.primary,
-                      );
-                    }),
-                  ),
-                ],
+                    if (errorMessage != null)
+                      Padding(
+                        padding: EdgeInsets.all(8.0.w),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                      ),
+                    Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Obx(() {
+                        return CustomElevatedButton(
+                          label:
+                              apiController.isLoading.value
+                                  ? "Traitement en cours..."
+                                  : "Confirmer le retrait",
+                          labelColor: Colors.yellow,
+                          isLoading: apiController.isLoading.value,
+                          onPressed:
+                              apiController.isLoading.value
+                                  ? null
+                                  : () async {
+                                    if (!validatePanier()) return;
+                                    final selection =
+                                        panierProduits
+                                            .where((p) => p.isSelected)
+                                            .toList();
+                                    final retraitList =
+                                        selection
+                                            .map((e) => e.toRetraitModel())
+                                            .toList();
+                                    await apiController.initWithdraw({
+                                      'phone': pdi!.phone,
+                                      'produits':
+                                          retraitList
+                                              .map((e) => e.toJson())
+                                              .toList(),
+                                    });
+                                  },
+                          backgroundColor: AppColors.primary,
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               ),
     );
   }
@@ -275,17 +245,17 @@ class _PanierScreenState extends State<PanierScreen> {
     required bool isEnabled,
   }) {
     return Opacity(
-      opacity: isEnabled ? 1.0 : 0.4,
+      opacity: isEnabled ? 1.0 : 0.3,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 36.w,
+        height: 36.w,
         decoration: BoxDecoration(
           color: isEnabled ? Colors.green.shade100 : Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: InkWell(
           onTap: isEnabled ? onPressed : null,
-          child: Icon(icon, size: 20, color: Colors.black),
+          child: Icon(icon, size: 18.sp, color: Colors.black),
         ),
       ),
     );

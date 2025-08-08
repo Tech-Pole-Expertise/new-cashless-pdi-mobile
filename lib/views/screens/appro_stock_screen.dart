@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
@@ -13,9 +14,10 @@ class StockAndApproView extends StatefulWidget {
 }
 
 class _StockAndApproViewState extends State<StockAndApproView> {
-  List<bool> isSelected = [true, false]; // Stock = index 0, Appro = index 1
+  List<bool> isSelected = [true, false];
   final ApiController apiController = Get.find<ApiController>();
   final TextEditingController recherche = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -25,16 +27,13 @@ class _StockAndApproViewState extends State<StockAndApproView> {
 
   @override
   Widget build(BuildContext context) {
-    // final merchantController = Get.find<MerchantController>();
-    // final merchant = merchantController.merchant.value;
-
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         title: Text(
           'Gestion du stock',
           style: TextStyle(
+            fontSize: 20.sp,
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
           ),
@@ -43,23 +42,20 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: EdgeInsets.all(12.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Header personnalisé avec photo + infos
-              const SizedBox(height: 24),
-
+              SizedBox(height: 24.h),
               Container(
-                height: 60,
+                height: 60.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight, // fond vert clair
-                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(14.r),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.min,
                   children: List.generate(2, (index) {
                     final bool selected = isSelected[index];
                     final String label =
@@ -75,28 +71,28 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: 150,
-                        height: 45,
+                        width: 150.w,
+                        height: 45.h,
                         alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        margin: EdgeInsets.symmetric(horizontal: 4.w),
                         decoration: BoxDecoration(
                           color:
                               selected ? AppColors.primary : Colors.transparent,
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Coins légèrement arrondis
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
-                        child: Text(
-                          label,
-                          softWrap: false, // optionnel mais conseillé ici
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color:
-                                selected
-                                    ? Colors.yellow
-                                    : Colors.green.shade800,
-                            fontWeight: FontWeight.bold,
+                        child: FittedBox(
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color:
+                                  selected
+                                      ? Colors.yellow
+                                      : Colors.green.shade800,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -104,37 +100,39 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                   }),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 12.h),
               TextFormField(
                 controller: recherche,
                 decoration: InputDecoration(
-                  label: Text("Recherche"),
+                  label: Text("Recherche", style: TextStyle(fontSize: 14.sp)),
                   hintText: "Rechercher une opération",
-                  suffixIcon: Icon(Icons.search, color: AppColors.primary),
-                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.primary,
+                    size: 22.sp,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onChanged: searchItem,
               ),
-
-              const SizedBox(height: 12),
-
-              /// Loader
+              SizedBox(height: 12.h),
               Obx(() {
                 if (apiController.isLoading.value) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 return const SizedBox.shrink();
               }),
-
-              const SizedBox(height: 12),
-
-              /// Liste
+              SizedBox(height: 12.h),
               Expanded(
                 child: Obx(() {
                   return isSelected[0] ? _buildStockList() : _buildApproList();
@@ -149,10 +147,10 @@ class _StockAndApproViewState extends State<StockAndApproView> {
 
   Widget _buildStockList() {
     if (apiController.marchandFilteredStocks.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Aucun produit en stock.',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
         ),
       );
     }
@@ -166,29 +164,29 @@ class _StockAndApproViewState extends State<StockAndApproView> {
           onTap: () {
             Get.snackbar(
               'Info',
-              'Auccun détail disponible pour ce stock',
+              'Aucun détail disponible pour ce stock',
               snackPosition: SnackPosition.TOP,
               backgroundColor: Colors.white,
-              icon: const Icon(Icons.info, color: AppColors.primary),
+              icon: Icon(Icons.info, color: AppColors.primary),
               colorText: AppColors.textPrimary,
             );
           },
           child: Column(
             children: [
               ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 4.h,
                 ),
                 leading: Container(
-                  width: 40,
-                  height: 40,
+                  width: 40.w,
+                  height: 40.h,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.primary),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(6.w),
                     child: Image.asset(
                       'assets/img/fruit.png',
                       fit: BoxFit.contain,
@@ -197,20 +195,25 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                 ),
                 title: Text(
                   '${stock.label} (${stock.poids})',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
                 ),
                 subtitle: Text(
                   'Code: ${stock.code}',
-                ), // Utilise stock.code si dispo
+                  style: TextStyle(fontSize: 12.sp),
+                ),
                 trailing: Text(
                   'Qté dispo : ${stock.qtePhysique}',
                   style: TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),
-              const Divider(height: 1),
+              Divider(height: 1.h),
             ],
           ),
         );
@@ -220,10 +223,10 @@ class _StockAndApproViewState extends State<StockAndApproView> {
 
   Widget _buildApproList() {
     if (apiController.marchandFilteredAppro.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Aucun approvisionnement trouvé.',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
         ),
       );
     }
@@ -236,56 +239,74 @@ class _StockAndApproViewState extends State<StockAndApproView> {
           0,
           (sum, produit) => sum + produit.qte,
         );
+
         return InkWell(
           onTap: () {
-            Get.bottomSheet(
-              ApproBottomSheetDetailsSheet(produits: appro.produits),
-              isScrollControlled: false,
-              backgroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-            );
+            appro.produits.isEmpty
+                ? Get.snackbar(
+                  'Info',
+                  'Aucun détail disponible',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.white,
+                  icon: Icon(Icons.info, color: AppColors.primary),
+                  colorText: AppColors.textPrimary,
+                )
+                : Get.bottomSheet(
+                  ApproBottomSheetDetailsSheet(produits: appro.produits),
+                  isScrollControlled: false,
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16.r),
+                    ),
+                  ),
+                );
           },
           child: Column(
             children: [
               ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 4.h,
                 ),
                 leading: Container(
-                  width: 40,
-                  height: 40,
+                  width: 40.w,
+                  height: 40.h,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight.withAlpha(100),
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.primaryLight),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: const Icon(
+                    padding: EdgeInsets.all(6.w),
+                    child: Icon(
                       Icons.local_shipping,
                       color: AppColors.primary,
+                      size: 20.sp,
                     ),
                   ),
                 ),
                 title: Text(
                   'Approvisionnement',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
                 ),
                 subtitle: Text(
-                  'Reçu le :${DateFormat('dd/MM/yyyy').format(appro.date)}', // Utilise stock.code si disp
-                ), // Utilise stock.code si dispo
+                  'Reçu le : ${DateFormat('dd/MM/yyyy').format(appro.date)}',
+                  style: TextStyle(fontSize: 12.sp),
+                ),
                 trailing: Text(
                   'Qté total : $totalQte',
                   style: TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),
-              const Divider(height: 1),
+              Divider(height: 1.h),
             ],
           ),
         );
@@ -293,24 +314,9 @@ class _StockAndApproViewState extends State<StockAndApproView> {
     );
   }
 
-  String formatDate(DateTime dateToFormat) {
-    DateTime date = dateToFormat; // ta date ici
-
-    String jour = DateFormat.EEEE('fr_FR').format(date); // Vendredi
-    String jourNum = DateFormat.d('fr_FR').format(date); // 14
-    String mois = DateFormat.MMMM('fr_FR').format(date); // juillet
-    String heure = DateFormat.H('fr_FR').format(date); // 12
-    String minute = DateFormat.m('fr_FR').format(date); // 14
-
-    String texteFinal = 'Reçu le $jour $jourNum $mois à $heure : ${minute}min';
-    return texteFinal;
-  }
-
   void searchItem(String query) {
     final input = query.toLowerCase();
-
     if (input.isEmpty) {
-      // Si aucun texte tapé → réinitialiser la liste filtrée
       apiController.marchandFilteredAppro.assignAll(
         apiController.marchandAppro,
       );
@@ -319,57 +325,44 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       );
       return;
     }
-    // Filtrer les données en fonction de la saisie
     if (isSelected[0]) {
-      // Filtrer pour la liste de stock
       _filterStock(input);
     } else {
-      // Filtrer pour la liste d'approvisionnement
       _filterAppro(input);
     }
-
-    // Mettre à jour la liste filtrée
   }
 
   void _filterStock(String input) {
     final filtered =
         apiController.marchandStocks.where((stock) {
-          final stockLabel = stock.label.toLowerCase();
-          final stockCode = stock.code.toLowerCase();
-          final stockPoids = stock.poids.toLowerCase();
-          final stockQte = stock.qtePhysique.toString().toLowerCase();
-          return stockLabel.contains(input) ||
-              stockCode.contains(input) ||
-              stockPoids.contains(input) ||
-              stockQte.contains(input);
+          final label = stock.label.toLowerCase();
+          final code = stock.code.toLowerCase();
+          final poids = stock.poids.toLowerCase();
+          final qte = stock.qtePhysique.toString().toLowerCase();
+          return label.contains(input) ||
+              code.contains(input) ||
+              poids.contains(input) ||
+              qte.contains(input);
         }).toList();
 
-    filtered.isNotEmpty
-        ? apiController.marchandFilteredStocks.assignAll(filtered)
-        : apiController.marchandFilteredStocks.assignAll([]);
+    apiController.marchandFilteredStocks.assignAll(filtered);
   }
 
   void _filterAppro(String input) {
     final query = input.toLowerCase();
-
     final filtered =
         apiController.marchandAppro.where((appro) {
-          // Vérifie si la date contient le texte recherché
           final formattedDate =
               DateFormat(
                 'dd MMM yyyy à HH:mm',
               ).format(appro.date).toLowerCase();
-
           final matchDate = formattedDate.contains(query);
-
-          // Vérifie si au moins un produit contient le texte recherché
           final matchProduit = appro.produits.any(
             (produit) =>
                 produit.produit.toLowerCase().contains(query) ||
                 produit.qte.toString().toLowerCase().contains(query) ||
                 produit.poids.toLowerCase().contains(query),
           );
-
           return matchDate || matchProduit;
         }).toList();
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // ⬅️ important
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
@@ -9,10 +10,12 @@ import 'package:pv_deme/views/widget/elevated_button.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
+
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final ApiController apiController = Get.put(ApiController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,14 +26,15 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: 250,
+                height: 250.h,
                 width: double.infinity,
-                child: Image.asset('assets/img/users.png', fit: BoxFit.cover),
+                child: Image.asset(
+                  'assets/img/users.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-
-              // Partie formulaire scrollable
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: EdgeInsets.all(18.w),
                 child: Form(
                   key: formkey,
                   autovalidateMode: AutovalidateMode.onUnfocus,
@@ -42,18 +46,18 @@ class LoginScreen extends StatelessWidget {
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
-                          fontSize: 22,
+                          fontSize: 22.sp,
                         ),
                       ),
+                      SizedBox(height: 4.h),
                       Text(
                         'Entrez vos identifiants pour vous connecter.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                       ),
-
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       CustomTextField(
                         controller: phoneController,
                         label: 'Numéro de téléphone',
@@ -62,9 +66,7 @@ class LoginScreen extends StatelessWidget {
                             'Veuillez entrer un numéro de téléphone valide.',
                         hint: '7X XX XX XX',
                         keyboardType: TextInputType.phone,
-                        prefixIcon: Icon(
-                          Icons.phone,
-                        ), // facultatif, pour être clair
+                        prefixIcon: Icon(Icons.phone, size: 20.sp),
                         suffixIcon: null,
                         formatAsPhoneNumber: true,
                         validator: (value) {
@@ -76,52 +78,48 @@ class LoginScreen extends StatelessWidget {
                           }
                           return null;
                         },
-                        // Utilise prefix à la place
                         prefix: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
+                          padding: EdgeInsets.only(right: 8.w),
                           child: Text(
                             '+226',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                             ),
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       CustomTextField(
                         controller: passwordController,
                         label: 'Mot de passe',
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: Icon(Icons.lock, size: 20.sp),
                         regexPattern: r'^.{8,}$',
                         validationMessage:
                             'Le mot de passe doit contenir au moins 8 caractères.',
-
                         isPassword: true,
                         hint: '********',
                         keyboardType: TextInputType.text,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
                             Get.toNamed(AppRoutes.forgotPassword);
                           },
-                          child: const Text(
+                          child: Text(
                             'Mot de passe oublié ?',
                             style: TextStyle(
                               color: AppColors.primary,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               decorationColor: AppColors.primary,
                               decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 30),
+                      SizedBox(height: 30.h),
                       Obx(
                         () => CustomElevatedButton(
                           label: 'Se connecter',
@@ -130,12 +128,10 @@ class LoginScreen extends StatelessWidget {
                           onPressed: () {
                             if (formkey.currentState!.validate()) {
                               Logger().d(
-                                'phone:'
-                                '+226${phoneController.text}',
+                                'phone:' '+226${phoneController.text}',
                               );
                               apiController.login({
-                                'username':
-                                    '+226${phoneController.text.replaceAll(' ', '').trim()}',
+                                'username': '+226${phoneController.text.replaceAll(' ', '').trim()}',
                                 'password': passwordController.text,
                               });
                             }

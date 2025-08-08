@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈 Ajouté
 import 'package:get/get.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
@@ -21,7 +22,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // Important !
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -29,13 +30,20 @@ class ForgotPasswordScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
+            width: 40.w,
+            height: 40.h,
+            alignment: Alignment.topCenter,
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               border: Border.all(color: AppColors.primaryLight),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+              icon: Icon(
+                Icons.arrow_back,
+                color: AppColors.primary,
+                size: 16.sp,
+              ),
               onPressed: () => Get.back(),
             ),
           ),
@@ -46,12 +54,12 @@ class ForgotPasswordScreen extends StatelessWidget {
           children: [
             // Image pleine largeur et hauteur partielle
             SizedBox(
-              height: 250,
+              height: 250.h,
               width: double.infinity,
               child: Image.asset('assets/img/users.png', fit: BoxFit.cover),
             ),
             Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: EdgeInsets.all(18.w),
               child: Form(
                 key: formKey,
                 child: Column(
@@ -62,17 +70,18 @@ class ForgotPasswordScreen extends StatelessWidget {
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w500,
-                        fontSize: 22,
+                        fontSize: 22.sp,
                       ),
                     ),
+                    SizedBox(height: 4.h),
                     Text(
                       'Entrez votre numéro pour continuer.',
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     CustomTextField(
                       controller: phoneController,
                       label: 'Numéro de téléphone',
@@ -84,21 +93,22 @@ class ForgotPasswordScreen extends StatelessWidget {
                       prefixIcon: Icon(
                         Icons.phone,
                         color: AppColors.textPrimary,
+                        size: 20.sp,
                       ),
                       suffixIcon: null,
                       formatAsPhoneNumber: true,
                       prefix: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: EdgeInsets.only(right: 8.w),
                         child: Text(
                           '+226',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     Obx(
                       () => CustomElevatedButton(
                         isLoading: apiController.isLoading.value,
@@ -112,16 +122,16 @@ class ForgotPasswordScreen extends StatelessWidget {
                         backgroundColor: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Align(
                       alignment: Alignment.center,
                       child: TextButton(
                         onPressed: () => Get.back(),
-                        child: const Text(
+                        child: Text(
                           'Retourner sur la page de connexion',
                           style: TextStyle(
                             color: AppColors.primary,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ),
