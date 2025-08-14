@@ -11,6 +11,7 @@ class TokenDataController  extends GetxController{
   TokenModel? getToken() {
     return tokenProvider.getToken();
   }
+   bool hasToken() => getToken() != null;
   Future<void> clearToken() async {
     await tokenProvider.clearToken();
   }

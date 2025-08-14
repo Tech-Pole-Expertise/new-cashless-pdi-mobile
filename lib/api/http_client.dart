@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pv_deme/api/Service/token_data_controller.dart';
 import 'package:pv_deme/api/models/token_model.dart';
@@ -78,10 +79,10 @@ class CustomHttpClient {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         tokenController.saveToken(TokenModel.fromJson(data));
-        // logger.d('Token refreshed successfully: ${response.body}');
+        Logger().d('Token refreshed successfully: ${response.body}');
         return true;
       } else {
-        // logger.d('Failed to refresh token: ${response.statusCode}');
+        Logger().d('Failed to refresh token: ${response.statusCode}');
         return false;
       }
     } catch (e) {

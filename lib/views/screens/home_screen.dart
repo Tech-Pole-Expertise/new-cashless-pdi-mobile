@@ -32,6 +32,7 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildUserHeader(merchantStat),
+              _buildPdiWithdraw('500'),
               // SizedBox(height: 6.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -40,7 +41,7 @@ class HomeScreen extends StatelessWidget {
               // SizedBox(height: 8.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: _buildRetraitSection(context),
+                child: Expanded(child: _buildRetraitSection(context)),
               ),
             ],
           ),
@@ -85,94 +86,196 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPdiWithdraw(String count) {
+    return Container(
+      height: 108.h,
+      // padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.r),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            Color(0xFFD8E6D5), // Vert clair
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Nombre de PDI servi',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  'Total: $count',
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    color: AppColors.secondaryLight,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 10.w),
+                  child: Container(
+                    width: 140.w,
+                    height: 65.h,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF7CAC10).withAlpha(
+                            (0.6 * 255).toInt(),
+                          ), // Vert clair semi-transparent
+                          Colors.yellow..withAlpha((0.6 * 255).toInt()),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      // Vert clair
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(280.h), // arrondi haut gauche
+                        topRight: Radius.circular(280.h), // arrondi haut droit
+                      ),
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.white,
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
+                        left: BorderSide(
+                          color: Colors.white,
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
+                        right: BorderSide(
+                          color: Colors.white,
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 35.w,
+                top: 35.h,
+                child: Image.asset(
+                  'assets/img/vector.png',
+                  height: 65.h,
+                  width: 65.w,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatsCards(merchantStat) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildStatCard(
-          icon: Icons.local_shipping,
-          title: "Approvisionnement reçu",
+          image: 'assets/img/appro.png',
+          title: "Approvisionnement",
           count: merchantStat?.supplyCount ?? 0,
-          subtitle: "Statistiques générales",
+
           color: AppColors.primary,
         ),
         _buildStatCard(
-          icon: Icons.import_export,
+          image: 'assets/img/retrait.png',
           title: "Retraits effectués",
           count: merchantStat?.withdrawalCount ?? 0,
-          subtitle: "Ce mois",
-          color: AppColors.primary,
+
+          color: Color(0xFF7CAC10), // Vert
         ),
       ],
     );
   }
 
   Widget _buildStatCard({
-    required IconData icon,
+    required String image,
     required String title,
     required int count,
-    required String subtitle,
     required Color color,
   }) {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      width: 165.w,
+      height: 123.h,
       margin: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
       ),
-      child: Row(
+      child: Stack(
         children: [
-          // Icône dans un cercle coloré soft
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: color.withAlpha((255 * 0.1).toInt()),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 20.sp),
-          ),
-          SizedBox(width: 16.w),
-
-          // Texte
-          Expanded(
+          // Contenu principal centré
+          Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Image.asset(image, height: 35.h, width: 35.w),
+                SizedBox(height: 6.h),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 10.sp,
+                    color: AppColors.primary,
                   ),
                 ),
-                SizedBox(height: 6.h),
+                SizedBox(height: 4.h),
                 Text(
-                  "Total : $count",
+                  'Total: $count',
                   style: TextStyle(
                     fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
                   ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
 
-          // Image ou graphique
-          Image.asset(
-            'assets/img/group.png',
-            height: 40.h,
-            width: 40.w,
-            fit: BoxFit.contain,
+          // Ligne en bas
+          Positioned(
+            bottom: 0,
+            left: 12,
+            right: 12,
+            child: Container(
+              width: 50.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(16.r),
+                  bottomRight: Radius.circular(16.r),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -181,20 +284,23 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRetraitSection(BuildContext context) {
     return Container(
-      height: 300.h,
+      
       padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
+       decoration: BoxDecoration(
+         color: AppColors.primaryLight,
+         borderRadius: BorderRadius.only(
+           topLeft: Radius.circular(24),
+           topRight: Radius.circular(24),
+         ),
+       ),
       child: Column(
         children: [
-          Text(
-            'Veuillez sélectionner\nune méthode de retrait',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
-          ),
-          SizedBox(height: 16.h),
+           Text(
+             'Veuillez sélectionner\nune méthode de retrait',
+             textAlign: TextAlign.center,
+             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
+           ),
+           SizedBox(height: 16.h),
           CustomElevatedButton(
             label: "Scanner le QR code",
             onPressed: () => Get.toNamed(AppRoutes.scan),

@@ -54,6 +54,13 @@ class ApiController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    TokenDataController tokenController = Get.find<TokenDataController>();
+    if (tokenController.hasToken()) {
+      fetchData();
+    }
+  }
+
+  void fetchData() {
     getMarchandStat();
     retraitHistory();
     getContatInfos();
@@ -766,7 +773,9 @@ class ApiController extends GetxController {
       isLoading.value = true;
       final tokenController = Get.find<TokenDataController>();
       final token = tokenController.getToken();
-      final response = await _apiProvider.refreshToken({'refresh':token!.refreshToken.toString()});
+      final response = await _apiProvider.refreshToken({
+        'refresh': token!.refreshToken.toString(),
+      });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         tokenController.saveToken(TokenModel.fromJson(data));
@@ -781,7 +790,6 @@ class ApiController extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
-     
     }
   }
 }

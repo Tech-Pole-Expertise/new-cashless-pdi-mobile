@@ -30,7 +30,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       bottomNavigationBar: SizedBox(
         child: BottomNavigationBar(
           backgroundColor: Colors.white,
-          elevation: 8,
+          elevation: 1,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textSecondary,
           showUnselectedLabels: true,

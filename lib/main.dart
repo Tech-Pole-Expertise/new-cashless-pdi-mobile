@@ -14,8 +14,7 @@ import 'package:pv_deme/routes/app_routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  // final merchantController = Get.put(MerchantController(), permanent: true);
-  // merchantController.loadMerchant();
+  
   Get.put(TokenDataController());
   Get.put(MerchantController());
   SystemChrome.setSystemUIOverlayStyle(
