@@ -42,6 +42,14 @@ class ApiController extends GetxController {
   final Rx<MerchantStatModel?> merchantStat = Rx<MerchantStatModel?>(null);
   final Rx<ContactInfoModel?> contactInfoModel = Rx<ContactInfoModel?>(null);
 
+  // ✅ Controllers persistants
+  final filterClientController = TextEditingController();
+  final filterIdentifierController = TextEditingController();
+
+  // ✅ Dates observables
+  var filterStartDate = Rxn<DateTime>();
+  var filterEndDate = Rxn<DateTime>();
+
   var errorMessage = ''.obs;
   // Example of an API call method
 
@@ -119,24 +127,16 @@ class ApiController extends GetxController {
     } catch (e) {
       errorMessage.value = 'Login failed: $e';
       if (e is SocketException) {
-        Get.toNamed(
-          AppRoutes.apiError,
-          arguments: {
-            'title': 'Une erreur s\'est produite',
-            'message':
-                'Impossible de se connecter au serveur. Vérifiez votre connexion.',
-            'status_code': -1,
-          },
+        CustomSnackBar().showError(
+          'Vous êtes hors ligne',
+          'Verifiez votre connexion internet et réessayez.',
         );
       }
       logger.d('Une erreur login catch de type $e ');
       errorMessage.value = 'Login: $e';
-      Get.toNamed(
-        AppRoutes.apiError,
-        arguments: {
-          'title': 'Une erreur s\'est produite',
-          'message': 'Une erreur inconnue est survenue',
-        },
+      CustomSnackBar().showError(
+        'Une erreur s\'est produite',
+        'Une erreur inconnue est survenue.',
       );
     } finally {
       isLoading.value = false;
@@ -613,15 +613,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       if (e is SocketException) {
-        Get.toNamed(
-          AppRoutes.apiError,
-          arguments: {
-            'title': 'Une erreur s\'est produite',
-            'message':
-                'Impossible de se connecter au serveur. Vérifiez votre connexion.',
-            'status_code': -1,
-          },
-        );
+        retraitHistoryData.assignAll([]);
       }
       logger.d(
         'Une erreur catch de type $e lors de la récupération des historiques',
@@ -658,15 +650,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       if (e is SocketException) {
-        Get.toNamed(
-          AppRoutes.apiError,
-          arguments: {
-            'title': 'Une erreur s\'est produite',
-            'message':
-                'Impossible de se connecter au serveur. Vérifiez votre connexion.',
-            'status_code': -1,
-          },
-        );
+        marchandStocks.assignAll([]);
       }
       logger.d('Une erreur catch de type $e');
     } finally {
@@ -699,15 +683,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       if (e is SocketException) {
-        Get.toNamed(
-          AppRoutes.apiError,
-          arguments: {
-            'title': 'Une erreur s\'est produite',
-            'message':
-                'Impossible de se connecter au serveur. Vérifiez votre connexion.',
-            'status_code': -1,
-          },
-        );
+        marchandAppro.assignAll([]);
       }
       logger.d(
         'Une erreur catch de type $e lors de la récupération des historiques',
@@ -791,5 +767,65 @@ class ApiController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // Méthode pour appliquer les filtres
+  void applyFilters() {
+    final queryClient = filterClientController.text.toLowerCase();
+    final queryId = filterIdentifierController.text.toLowerCase();
+
+    final adjustedStart =
+        filterStartDate.value != null
+            ? DateTime(
+              filterStartDate.value!.year,
+              filterStartDate.value!.month,
+              filterStartDate.value!.day,
+              0,
+              0,
+              0,
+            )
+            : null;
+
+    final adjustedEnd =
+        filterEndDate.value != null
+            ? DateTime(
+              filterEndDate.value!.year,
+              filterEndDate.value!.month,
+              filterEndDate.value!.day,
+              23,
+              59,
+              59,
+            )
+            : null;
+
+    final filtered =
+        retraitHistoryData.where((retrait) {
+          final identifier = retrait.pdi.identifier.toLowerCase();
+          final clientName = retrait.clientName.toLowerCase();
+          final retraitDate = retrait.date;
+
+          final matchClient =
+              queryClient.isEmpty || clientName.contains(queryClient);
+          final matchId = queryId.isEmpty || identifier.contains(queryId);
+          final matchDate =
+              (adjustedStart == null ||
+                  retraitDate.isAtSameMomentAs(adjustedStart) ||
+                  retraitDate.isAfter(adjustedStart)) &&
+              (adjustedEnd == null ||
+                  retraitDate.isAtSameMomentAs(adjustedEnd) ||
+                  retraitDate.isBefore(adjustedEnd));
+
+          return matchClient && matchId && matchDate;
+        }).toList();
+
+    filteredRetraitHistoryData.assignAll(filtered);
+  }
+
+  void resetFilters() {
+    filterClientController.clear();
+    filterIdentifierController.clear();
+    filterStartDate.value = null;
+    filterEndDate.value = null;
+    filteredRetraitHistoryData.assignAll(retraitHistoryData);
   }
 }

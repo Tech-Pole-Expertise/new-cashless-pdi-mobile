@@ -15,7 +15,7 @@ class RetraitDetailsSheet extends StatelessWidget {
     final date = DateFormat('dd/MM/yyyy').format(retrait.date);
 
     return Container(
-      color: Colors.transparent,
+      color: Colors.white,
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),

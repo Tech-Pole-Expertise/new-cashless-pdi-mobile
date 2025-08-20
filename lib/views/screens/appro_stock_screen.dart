@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/views/widget/appro_bottom_sheet.dart';
 
@@ -21,8 +22,21 @@ class _StockAndApproViewState extends State<StockAndApproView> {
   @override
   void initState() {
     super.initState();
+    if(apiController.marchandFilteredStocks.isEmpty) {
+      apiController.getMarchandStock();
+      
+    }
+    if(apiController.marchandFilteredAppro.isEmpty) {
+      apiController.getMarchandAppro();
+    }
+     // Écoute la reconnexion
+  final networkController = Get.find<NetworkController>();
+  networkController.onReconnect = () {
+    // Actualise automatiquement les données quand la connexion revient
     apiController.getMarchandStock();
     apiController.getMarchandAppro();
+  };
+    
   }
 
   @override
@@ -160,62 +174,47 @@ class _StockAndApproViewState extends State<StockAndApproView> {
       itemBuilder: (context, index) {
         final stock = apiController.marchandFilteredStocks[index];
 
-        return GestureDetector(
-          onTap: () {
-            Get.snackbar(
-              'Info',
-              'Aucun détail disponible pour ce stock',
-              snackPosition: SnackPosition.TOP,
-              backgroundColor: Colors.white,
-              icon: Icon(Icons.info, color: AppColors.primary),
-              colorText: AppColors.textPrimary,
-            );
-          },
-          child: Column(
-            children: [
-              ListTile(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 4.h,
+        return Column(
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 4.h,
+              ),
+              leading: Container(
+                width: 40.w,
+                height: 40.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary),
                 ),
-                leading: Container(
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primary),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(6.w),
-                    child: Image.asset(
-                      'assets/img/fruit.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                title: Text(
-                  '${stock.label} (${stock.poids})',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                  ),
-                ),
-                subtitle: Text(
-                  'Code: ${stock.code}',
-                  style: TextStyle(fontSize: 12.sp),
-                ),
-                trailing: Text(
-                  'Qté dispo : ${stock.qtePhysique}',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13.sp,
+                child: Padding(
+                  padding: EdgeInsets.all(6.w),
+                  child: Image.asset(
+                    'assets/img/fruit.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
-              Divider(height: 1.h),
-            ],
-          ),
+              title: Text(
+                '${stock.label} (${stock.poids})',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+              ),
+              subtitle: Text(
+                'Code: ${stock.code}',
+                style: TextStyle(fontSize: 12.sp),
+              ),
+              trailing: Text(
+                'Qté dispo : ${stock.qtePhysique}',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13.sp,
+                ),
+              ),
+            ),
+            Divider(height: 1.h),
+          ],
         );
       },
     );
@@ -294,7 +293,7 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                   ),
                 ),
                 subtitle: Text(
-                  'Reçu le : ${DateFormat('dd/MM/yyyy').format(appro.date)}',
+                  'Reçu le : ${DateFormat('dd/MM/yyyy').format(appro.date)} à ${DateFormat('HH:mm').format(appro.date)}',
                   style: TextStyle(fontSize: 12.sp),
                 ),
                 trailing: Text(

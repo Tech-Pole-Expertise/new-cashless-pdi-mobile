@@ -3,21 +3,40 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/views/widget/retrait_detail_bottom_sheet.dart';
 import 'package:pv_deme/views/widget/retrait_filter_sheet.dart';
 
-class HistoryScreen extends StatelessWidget {
-  HistoryScreen({super.key});
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
 
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
   final TextEditingController recherche = TextEditingController();
+
   final TextEditingController filter = TextEditingController();
+
   final ApiController apiController = Get.find<ApiController>();
+  @override
+  void initState() {
+    super.initState();
+    if (apiController.retraitHistoryData.isEmpty) {
+      apiController.retraitHistory();
+    }
+    // Écoute la reconnexion
+    final networkController = Get.find<NetworkController>();
+    networkController.onReconnect = () {
+      // Actualise automatiquement les données quand la connexion revient
+      apiController.retraitHistory();
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    apiController.retraitHistory();
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -117,7 +136,7 @@ class HistoryScreen extends StatelessWidget {
                             ),
                           ),
                           isScrollControlled: true,
-                          builder: (_) => const RetraitFilterSheet(),
+                          builder: (_) => RetraitFilterSheet(context: context),
                         );
                       },
                     ),
@@ -135,6 +154,14 @@ class HistoryScreen extends StatelessWidget {
                     return Center(
                       child: Text(
                         'Aucun historique disponible.',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    );
+                  }
+                  if (apiController.filteredRetraitHistoryData.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Aucun correspondance pour ces filtres.',
                         style: TextStyle(fontSize: 14.sp),
                       ),
                     );

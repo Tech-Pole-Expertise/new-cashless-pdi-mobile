@@ -7,12 +7,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pv_deme/api/Service/token_data_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/dependancy_injection.dart';
+import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_navigation.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+   Get.put(NetworkController()); 
   await GetStorage.init();
   
   Get.put(TokenDataController());
@@ -37,6 +40,9 @@ void main() async {
       builder: (context, child) => MyApp(),
     ),
   );
+    DependancyInjection.init();
+
+  
 }
 
 class MyApp extends StatelessWidget {

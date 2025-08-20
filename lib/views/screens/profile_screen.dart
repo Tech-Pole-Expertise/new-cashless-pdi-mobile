@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/api/models/contact_info_model.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
+import 'package:pv_deme/views/widget/custom_outlined_button_withIcons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -51,6 +53,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (apiController.contactInfoModel.value == null) {
       apiController.getContatInfos();
     }
+     // Écoute la reconnexion
+  final networkController = Get.find<NetworkController>();
+  networkController.onReconnect = () {
+    // Actualise automatiquement les données quand la connexion revient
+    apiController.getContatInfos();
+  };
   }
 
   @override
@@ -67,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             width: double.infinity,
             height: 200.h,
-            color: AppColors.primaryLight,
+            color: AppColors.primary,
             child: Column(
               children: [
                 SizedBox(height: 16.h),
@@ -78,41 +86,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 SizedBox(height: 18.h),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 40.r,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: const AssetImage('assets/img/pro.png'),
-                    ),
-                    // Espace entre la photo et le texte
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            merchant != null
-                                ? '${merchant.lastname.toUpperCase()} ${merchant.firstname}'
-                                : 'Utilisateur inconnu',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.sp,
-                            ),
+                Padding(
+                  padding: EdgeInsets.all(8.h),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.h),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(50.r),
                           ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            merchant?.phone ?? 'Téléphone non disponible',
-                            style: TextStyle(fontSize: 14.sp),
+                          child: Icon(
+                            Icons.person,
+                            size: 45.sp,
+                            color: AppColors.primary,
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      // SizedBox(width: 12.w),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                            ),
+                            children: [
+                              TextSpan(
+                                text:
+                                    merchant != null
+                                        ? '${merchant.lastname.toUpperCase()} ${merchant.firstname}\n'
+                                        : 'Utilisateur inconnu\n',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    merchant?.phone ?? 'Téléphone indisponible',
+                                style: TextStyle(fontSize: 14.sp),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -199,29 +225,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-
-          // 🔷 BOUTON DÉCONNEXION
           Padding(
-            padding: EdgeInsets.all(12.w),
+            padding: const EdgeInsets.all(12.0),
             child: SizedBox(
               width: double.infinity,
-              child: OutlinedButton.icon(
+              child: CustomOutlinedButtonWithIcons(
+                icon: Icons.logout,
+
+                backgroundColor: AppColors.primaryLight,
+                label: "Déconnexion",
                 onPressed: () => merchantController.logout(),
-                icon: Icon(Icons.logout, color: AppColors.primary, size: 20.sp),
-                label: Text(
-                  'Déconnexion',
-                  style: TextStyle(color: AppColors.primary, fontSize: 14.sp),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.primary),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                ),
+                borderColor: AppColors.primary,
+                labelColor: Colors.green[900],
               ),
             ),
           ),
+
+         
         ],
       ),
     );

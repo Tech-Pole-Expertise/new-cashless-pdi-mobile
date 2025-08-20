@@ -1,192 +1,152 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
+import 'package:pv_deme/api/controllers/network_controller.dart';
+import 'package:pv_deme/api/models/retrait_history_model.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
-import 'package:pv_deme/views/widget/custom_outline_button.dart';
-import 'package:pv_deme/views/widget/elevated_button.dart';
+import 'package:pv_deme/views/widget/elevated_button_with_icons.dart';
 import 'package:pv_deme/views/widget/phone_entry_bottom_sheet.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final ApiController apiController = Get.find<ApiController>();
+
   final homeController = Get.put(HomeController());
+
+  bool isrefreshing = false;
+@override
+void initState() {
+  super.initState();
+
+  if (apiController.merchantStat.value == null) {
+    apiController.getMarchandStat();
+  }
+
+  // Écoute la reconnexion
+  final networkController = Get.find<NetworkController>();
+  networkController.onReconnect = () {
+    // Actualise automatiquement les données quand la connexion revient
+    apiController.getMarchandStat();
+  };
+}
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final merchantStat = apiController.merchantStat.value;
+    return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: Colors.white,
+      onRefresh: () {
+        isrefreshing = true;
+        return apiController.getMarchandStat();
+      },
+      child: Obx(() {
+        final merchantStat = apiController.merchantStat.value;
 
-      if (apiController.isLoading.value) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
-      }
+        if (apiController.isLoading.value && !isrefreshing) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-      return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+        return Container(
+          color: Colors.white,
+          width: Get.width,
+          height: Get.height,
+          child: Stack(
             children: [
               _buildUserHeader(merchantStat),
-              _buildPdiWithdraw('500'),
-              // SizedBox(height: 6.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: _buildStatsCards(merchantStat),
-              ),
-              // SizedBox(height: 8.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: Expanded(child: _buildRetraitSection(context)),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildUserHeader(merchantStat) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 40.r,
-          backgroundColor: Colors.transparent,
-          backgroundImage: const AssetImage('assets/img/pro.png'),
-        ),
-        // SizedBox(width: 12.w),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(color: Colors.black, fontSize: 14.sp),
-              children: [
-                TextSpan(
-                  text:
-                      merchantStat != null
-                          ? '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}\n'
-                          : 'Utilisateur inconnu\n',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextSpan(
-                  text: merchantStat?.phone ?? 'Téléphone indisponible',
-                  style: TextStyle(fontSize: 14.sp),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPdiWithdraw(String count) {
-    return Container(
-      height: 108.h,
-      // padding: EdgeInsets.all(16.w),
-      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.r),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary,
-            Color(0xFFD8E6D5), // Vert clair
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Nombre de PDI servi',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  'Total: $count',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    color: AppColors.secondaryLight,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Stack(
-            children: [
-              Align(
-                alignment: Alignment.bottomRight,
+              Positioned(
+                top: 160.h,
+                left: 0,
+                right: 0,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 10.w),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Container(
-                    width: 140.w,
-                    height: 65.h,
+                    width: 390.w,
+                    height: 225.h,
+                    padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF7CAC10).withAlpha(
-                            (0.6 * 255).toInt(),
-                          ), // Vert clair semi-transparent
-                          Colors.yellow..withAlpha((0.6 * 255).toInt()),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      // Vert clair
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(280.h), // arrondi haut gauche
-                        topRight: Radius.circular(280.h), // arrondi haut droit
-                      ),
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.white,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                        left: BorderSide(
-                          color: Colors.white,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                        right: BorderSide(
-                          color: Colors.white,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                      ),
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.all(Radius.circular(10.r)),
                     ),
+                    child: _buildStatsCards(merchantStat),
                   ),
                 ),
               ),
               Positioned(
-                left: 35.w,
-                top: 35.h,
-                child: Image.asset(
-                  'assets/img/vector.png',
-                  height: 65.h,
-                  width: 65.w,
-                  fit: BoxFit.contain,
-                ),
+                top: 400.h,
+                left: 0,
+                right: 0,
+                child: _buildRetraitSection(context),
+              ),
+              Positioned(
+                top: 550.h,
+                left: 0,
+                right: 0,
+                child: _buildLastWithdrawalSection(merchantStat),
               ),
             ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildUserHeader(merchantStat) {
+    return Container(
+      height: 205.h,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(16.r),
+          bottomRight: Radius.circular(16.r),
+        ),
+      ),
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(50.r),
+              ),
+              child: Icon(Icons.person, size: 45.sp, color: AppColors.primary),
+            ),
+          ),
+          // SizedBox(width: 12.w),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                children: [
+                  TextSpan(
+                    text:
+                        merchantStat != null
+                            ? '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}\n'
+                            : 'Utilisateur inconnu\n',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: merchantStat?.phone ?? 'Téléphone indisponible',
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -194,141 +154,296 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildStatsCards(merchantStat) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+
       children: [
-        _buildStatCard(
-          image: 'assets/img/appro.png',
-          title: "Approvisionnement",
-          count: merchantStat?.supplyCount ?? 0,
-
-          color: AppColors.primary,
+        Text(
+          'Statistiques générales',
+          style: TextStyle(
+            fontSize: 16.sp,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        _buildStatCard(
-          image: 'assets/img/retrait.png',
-          title: "Retraits effectués",
-          count: merchantStat?.withdrawalCount ?? 0,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-          color: Color(0xFF7CAC10), // Vert
+          children: [
+            _buildStatCard(
+              title: "PV Servis",
+              value: '500',
+              imagePath: 'assets/img/pv.png',
+            ),
+            _buildStatCard(
+              title: "Approvisionnement",
+              value: merchantStat?.supplyCount.toString() ?? '0',
+              imagePath: 'assets/img/appro.png',
+            ),
+            _buildStatCard(
+              title: "Retrait du mois",
+              value: merchantStat?.withdrawalCount.toString() ?? '0',
+              imagePath: 'assets/img/scan.png',
+            ),
+          ],
         ),
       ],
     );
   }
 
   Widget _buildStatCard({
-    required String image,
     required String title,
-    required int count,
-    required Color color,
+    required String value,
+    required String imagePath, // Add imagePath parameter
   }) {
-    return Container(
-      width: 165.w,
-      height: 123.h,
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Stack(
-        children: [
-          // Contenu principal centré
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      children: [
+        Container(
+          width: 62.w,
+          height: 62.h,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Image.asset(
+              imagePath, // Replace with the actual image path
+              height: 30.h,
+              width: 30.w,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          value.toString(),
+          style: TextStyle(
+            fontSize: 16.sp,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRetraitSection(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(12.w),
+          child: Text(
+            'Actions rapides',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+          ),
+        ),
+        Container(
+          width: Get.width,
+          color: AppColors.primaryLight,
+          child: Padding(
+            padding: EdgeInsets.all(12.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Image.asset(image, height: 35.h, width: 35.w),
-                SizedBox(height: 6.h),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 10.sp,
-                    color: AppColors.primary,
+                SizedBox(
+                  width: 170.w,
+                  height: 50.h,
+                  child: CustomElevatedButonWithIcons(
+                    label: "Scanner",
+                    icon: Icons.qr_code_scanner,
+                    iconColor: Colors.yellow,
+                    onPressed: () => Get.toNamed(AppRoutes.scan),
+                    backgroundColor: Colors.green[900]!,
+                    labelColor: Colors.yellow,
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  'Total: $count',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
+                SizedBox(
+                  width: 170.w,
+                  height: 50.h,
+                  child: CustomElevatedButonWithIcons(
+                    label: "Saisir",
+                    icon: Icons.person,
+                    iconColor: Colors.yellow,
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20.r),
+                          ),
+                        ),
+                        builder:
+                            (context) => PhoneEntryBottomSheet(
+                              showLoadingIndicator: false,
+                            ),
+                      );
+                    },
+                    backgroundColor: Colors.green[900]!,
+                    labelColor: Colors.yellow,
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ],
+    );
+  }
 
-          // Ligne en bas
-          Positioned(
-            bottom: 0,
-            left: 12,
-            right: 12,
-            child: Container(
-              width: 50.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(16.r),
-                  bottomRight: Radius.circular(16.r),
-                ),
+  Widget _buildLastWithdrawalSection(merchantStat) {
+    if (merchantStat == null || merchantStat.lastThreeWithdraw == null) {
+      return Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Dernières transactions',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+            ),
+            SizedBox(height: 24.h),
+            Center(
+              child: Text(
+                'Aucun historique disponible.',
+                style: TextStyle(fontSize: 14.sp),
               ),
             ),
+          ],
+        ),
+      );
+    }
+
+    final List<RetraitHistoryModel> lastWithdrawal =
+        merchantStat.lastThreeWithdraw;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Dernières transactions',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+          ),
+          // SizedBox(height: 8.h),
+
+          // 🟢 Hauteur fixe pour activer le scroll interne
+          SizedBox(
+            height: 220.h, // ajuste selon ce que tu veux afficher
+            child: Obx(() {
+              if (apiController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (lastWithdrawal.isEmpty) {
+                return Center(
+                  child: Text(
+                    'Aucun historique disponible.',
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: lastWithdrawal.length,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  final retrait = lastWithdrawal[index];
+                  final int totalProduits = retrait.produits.fold(
+                    0,
+                    (sum, p) => sum + p.qte,
+                  );
+
+                  return _buildTransactionItem(retrait, totalProduits);
+                },
+              );
+            }),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRetraitSection(BuildContext context) {
-    return Container(
-      
-      padding: EdgeInsets.all(20.w),
-       decoration: BoxDecoration(
-         color: AppColors.primaryLight,
-         borderRadius: BorderRadius.only(
-           topLeft: Radius.circular(24),
-           topRight: Radius.circular(24),
-         ),
-       ),
-      child: Column(
-        children: [
-           Text(
-             'Veuillez sélectionner\nune méthode de retrait',
-             textAlign: TextAlign.center,
-             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
-           ),
-           SizedBox(height: 16.h),
-          CustomElevatedButton(
-            label: "Scanner le QR code",
-            onPressed: () => Get.toNamed(AppRoutes.scan),
-            backgroundColor: Colors.green[900]!,
-            labelColor: Colors.yellow,
-          ),
-          SizedBox(height: 12.h),
-          CustomOutlinedButton(
-            label: "Entrer le numéro de la personne",
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20.r),
-                  ),
+  Widget _buildTransactionItem(RetraitHistoryModel retrait, int totalProduits) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40.w,
+                height: 40.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryLight,
+                  border: Border.all(color: AppColors.primary),
                 ),
-                builder:
-                    (context) =>
-                        PhoneEntryBottomSheet(showLoadingIndicator: false),
-              );
-            },
-            borderColor: AppColors.primary,
-            labelColor: Colors.green[900],
+                child: Icon(
+                  Icons.shopping_cart,
+                  color: AppColors.primary,
+                  size: 20.sp,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      retrait.clientName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'N° ${retrait.pdi.identifier}',
+                      style: TextStyle(fontSize: 12.sp),
+                    ),
+                    Text(
+                      'Qté produits : $totalProduits',
+                      style: TextStyle(fontSize: 12.sp),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Date du retrait',
+                    style: TextStyle(fontSize: 11.sp, color: Colors.black54),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    DateFormat('dd/MM/yyyy').format(retrait.date),
+                    style: TextStyle(fontSize: 12.sp),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Divider(color: Colors.black12, height: 1.h),
+      ],
     );
   }
 }

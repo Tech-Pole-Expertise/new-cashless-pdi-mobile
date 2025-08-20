@@ -3,74 +3,22 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
+import 'package:pv_deme/views/widget/custom_outlined_button_withIcons.dart';
 import 'package:pv_deme/views/widget/elevated_button_with_icons.dart';
 
-class RetraitFilterSheet extends StatefulWidget {
-  const RetraitFilterSheet({super.key});
-
-  @override
-  State<RetraitFilterSheet> createState() => _RetraitFilterSheetState();
-}
-
-class _RetraitFilterSheetState extends State<RetraitFilterSheet> {
-  final TextEditingController clientController = TextEditingController();
-  final TextEditingController identifierController = TextEditingController();
-  DateTime? startDate;
-  DateTime? endDate;
+class RetraitFilterSheet extends StatelessWidget {
+  final BuildContext context;
+  RetraitFilterSheet({super.key, required this.context});
 
   final ApiController apiController = Get.find<ApiController>();
-  void applyFilters() {
-    final queryClient = clientController.text.toLowerCase();
-    final queryId = identifierController.text.toLowerCase();
-
-    // Ajuster startDate et endDate aux bornes de journée
-    final adjustedStart =
-        startDate != null
-            ? DateTime(
-              startDate!.year,
-              startDate!.month,
-              startDate!.day,
-              0,
-              0,
-              0,
-            )
-            : null;
-
-    final adjustedEnd =
-        endDate != null
-            ? DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59)
-            : null;
-
-    final filtered =
-        apiController.retraitHistoryData.where((retrait) {
-          final identifier = retrait.pdi.identifier.toLowerCase();
-          final clientName = retrait.clientName.toLowerCase();
-          final retraitDate = retrait.date;
-
-          final matchClient =
-              queryClient.isEmpty || clientName.contains(queryClient);
-
-          final matchId = queryId.isEmpty || identifier.contains(queryId);
-
-          final matchDate =
-              (adjustedStart == null ||
-                  retraitDate.isAtSameMomentAs(adjustedStart) ||
-                  retraitDate.isAfter(adjustedStart)) &&
-              (adjustedEnd == null ||
-                  retraitDate.isAtSameMomentAs(adjustedEnd) ||
-                  retraitDate.isBefore(adjustedEnd));
-
-          return matchClient && matchId && matchDate;
-        }).toList();
-
-    apiController.filteredRetraitHistoryData.assignAll(filtered);
-    Navigator.pop(context);
-  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       child: Padding(
         padding: EdgeInsets.only(
           top: 20,
@@ -86,111 +34,110 @@ class _RetraitFilterSheetState extends State<RetraitFilterSheet> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 12),
+
+            // ✅ Nom client (pas besoin de Obx)
             TextFormField(
-              controller: clientController,
+              controller: apiController.filterClientController,
               decoration: InputDecoration(
                 label: Text("Nom du client"),
                 hintText: "Zongo Karim",
                 prefixIcon: Icon(Icons.person, color: AppColors.primary),
-
                 border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
               ),
             ),
 
             const SizedBox(height: 12),
+
+            // ✅ Identifiant
             TextFormField(
-              controller: identifierController,
+              controller: apiController.filterIdentifierController,
               decoration: InputDecoration(
                 label: Text("Identifiant"),
                 hintText: "22 00 34 56",
                 prefixIcon: Icon(Icons.code_sharp, color: AppColors.primary),
-
                 border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
               ),
             ),
 
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          startDate != null
-                              ? DateFormat('dd/MM/yyyy').format(startDate!)
-                              : '',
+
+            // ✅ Dates → ici on garde Obx car elles sont Rx
+            Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text:
+                            apiController.filterStartDate.value != null
+                                ? DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(apiController.filterStartDate.value!)
+                                : '',
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Date de début',
+                        prefixIcon: Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(),
+                      ),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              apiController.filterStartDate.value ??
+                              DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                          locale: const Locale('fr', 'FR'),
+                        );
+                        if (picked != null) {
+                          apiController.filterStartDate.value = picked;
+                        }
+                      },
                     ),
-                    decoration: InputDecoration(
-                      labelText: 'Date de début',
-                      hintText: 'Choisir',
-                      prefixIcon: const Icon(Icons.calendar_today),
-                      border: const OutlineInputBorder(),
-                    ),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: startDate ?? DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                        locale: const Locale('fr', 'FR'),
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          startDate = picked;
-                        });
-                      }
-                    },
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          endDate != null
-                              ? DateFormat('dd/MM/yyyy').format(endDate!)
-                              : '',
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text:
+                            apiController.filterEndDate.value != null
+                                ? DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(apiController.filterEndDate.value!)
+                                : '',
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Date de fin',
+                        prefixIcon: Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(),
+                      ),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              apiController.filterEndDate.value ??
+                              apiController.filterStartDate.value ??
+                              DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                          locale: const Locale('fr', 'FR'),
+                        );
+                        if (picked != null) {
+                          apiController.filterEndDate.value = picked;
+                        }
+                      },
                     ),
-                    decoration: InputDecoration(
-                      labelText: 'Date de fin',
-                      hintText: 'Choisir',
-                      prefixIcon: const Icon(Icons.calendar_today),
-                      border: const OutlineInputBorder(),
-                    ),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: endDate ?? startDate ?? DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                        locale: const Locale('fr', 'FR'),
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          endDate = picked;
-                        });
-                      }
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
             const SizedBox(height: 20),
+
+            // ✅ Bouton appliquer
             SizedBox(
               width: Get.width,
               child: CustomElevatedButonWithIcons(
@@ -199,7 +146,24 @@ class _RetraitFilterSheetState extends State<RetraitFilterSheet> {
                 labelColor: Colors.yellow,
                 iconColor: Colors.yellow,
                 icon: Icons.filter_alt,
-                onPressed: applyFilters,
+                onPressed: () {
+                  apiController.applyFilters();
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+
+            // ✅ Bouton reset (ne ferme pas)
+            SizedBox(
+              width: Get.width,
+              child: CustomOutlinedButtonWithIcons(
+                label: 'Réinitialiser les filtres',
+                labelColor: AppColors.primary,
+                icon: Icons.delete,
+                onPressed: () {
+                  apiController.resetFilters();
+                },
+                borderColor: AppColors.primary,
               ),
             ),
           ],
