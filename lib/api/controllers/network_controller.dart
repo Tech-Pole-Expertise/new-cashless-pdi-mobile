@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,8 +25,14 @@ class NetworkController extends GetxController {
     });
   }
 
-   _updateConnexionStatus(List<ConnectivityResult> result) {
+  Future<void> _updateConnexionStatus(List<ConnectivityResult> result) async {
     bool connected = !result.contains(ConnectivityResult.none);
+
+    // 🔥 Vérification réelle de la connexion Internet
+    if (connected) {
+      connected = await _hasInternet();
+    }
+
     bool wasConnected = isConnected.value;
     isConnected.value = connected;
 
@@ -41,6 +48,16 @@ class NetworkController extends GetxController {
       if (!wasConnected && connected && onReconnect != null) {
         onReconnect!();
       }
+    }
+  }
+
+  Future<bool> _hasInternet() async {
+    try {
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 3));
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (_) {
+      return false;
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
-import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_app_bar.dart';
 import 'package:pv_deme/views/widget/custom_otp_field.dart';
 import 'package:pv_deme/views/widget/elevated_button.dart';

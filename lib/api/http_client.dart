@@ -11,15 +11,13 @@ import 'package:pv_deme/api/providers/api_provider.dart';
 import 'package:pv_deme/views/widget/custom_snack_bar.dart';
 
 class CustomHttpClient {
-
   final storage = GetStorage();
   bool isSessionExpiredHandled = false;
   // final ApiController _apiController = Get.find<ApiController>();
   // final MerchantController _merchantController = Get.put(MerchantController());
   // final ApiController _apiController = Get.put(ApiController());
- late final MerchantController _merchantController;
+  late final MerchantController _merchantController;
   late final TokenDataController _tokenDataController;
-
 
   CustomHttpClient() {
     _merchantController = Get.find<MerchantController>();
@@ -82,7 +80,7 @@ class CustomHttpClient {
         Logger().d('Token refreshed successfully: ${response.body}');
         return true;
       } else {
-        Logger().d('Failed to refresh token: ${response.statusCode}');
+        Logger().d('Failed to refresh token: ${response.body}');
         return false;
       }
     } catch (e) {
@@ -122,7 +120,6 @@ class CustomHttpClient {
         () => post(endpoint, data: data, authRequired: authRequired),
       );
     }
-   
 
     return response;
   }

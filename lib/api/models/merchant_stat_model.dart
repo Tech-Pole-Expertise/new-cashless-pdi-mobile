@@ -5,6 +5,7 @@ class MerchantStatModel {
   final String lastname;
   final String phone;
   final int withdrawalCount;
+  final int customerCount;
   final int supplyCount;
   List<RetraitHistoryModel> lastThreeWithdraw;
   MerchantStatModel({
@@ -12,6 +13,7 @@ class MerchantStatModel {
     required this.lastname,
     required this.phone,
     required this.withdrawalCount,
+    required this.customerCount,
     required this.supplyCount,
     required this.lastThreeWithdraw,
   });
@@ -23,6 +25,7 @@ class MerchantStatModel {
       lastname: json['last_name'],
       phone: json['phone'],
       withdrawalCount: json['withdrawal_count'],
+      customerCount: json['customer_count'],
       supplyCount: json['supply_count'],
       lastThreeWithdraw:
           data

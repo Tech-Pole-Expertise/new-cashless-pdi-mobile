@@ -7,6 +7,7 @@ import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/views/widget/retrait_detail_bottom_sheet.dart';
 import 'package:pv_deme/views/widget/retrait_filter_sheet.dart';
+import 'package:pv_deme/views/widget/transaction_item.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -177,9 +178,42 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         (sum, p) => sum + p.qte,
                       );
 
-                      return GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (index == 0 ||
+                              retrait.date.month !=
+                                  apiController
+                                      .retraitHistoryData[index - 1]
+                                      .date
+                                      .month)
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 6.h),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_month,
+                                    size: 16.sp,
+                                    color: AppColors.primary,
+                                  ),
+                                  SizedBox(width: 6.w),
+                                  Text(
+                                    DateFormat(
+                                      'MMMM yyyy',
+                                      'fr_FR',
+                                    ).format(retrait.date),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          TransactionItemWidget(
+                            onPressed: (){
+                              showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
                             shape: RoundedRectangleBorder(
@@ -190,121 +224,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             builder:
                                 (_) => RetraitDetailsSheet(retrait: retrait),
                           );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (index == 0 ||
-                                retrait.date.month !=
-                                    apiController
-                                        .retraitHistoryData[index - 1]
-                                        .date
-                                        .month)
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6.h),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.calendar_month,
-                                      size: 16.sp,
-                                      color: AppColors.primary,
-                                    ),
-                                    SizedBox(width: 6.w),
-                                    Text(
-                                      DateFormat(
-                                        'MMMM yyyy',
-                                        'fr_FR',
-                                      ).format(retrait.date),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 8.h,
-                                horizontal: 4.w,
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // ✅ Leading : cercle avec icône
-                                  Container(
-                                    width: 40.w,
-                                    height: 40.w,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppColors.primaryLight,
-                                      border: Border.all(
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.shopping_cart,
-                                      color: AppColors.primary,
-                                      size: 20.sp,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-
-                                  // ✅ Centre : Nom client + numéro + qté
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          retrait.clientName,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14.sp,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          'N° ${retrait.pdi.identifier}',
-                                          style: TextStyle(fontSize: 12.sp),
-                                        ),
-                                        Text(
-                                          'Qté produits : $totalProduits',
-                                          style: TextStyle(fontSize: 12.sp),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // ✅ Trailing : date du retrait
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'Date du retrait',
-                                        style: TextStyle(
-                                          fontSize: 11.sp,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4.h),
-                                      Text(
-                                        DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(retrait.date),
-                                        style: TextStyle(fontSize: 12.sp),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Divider(color: Colors.black12, height: 1.h),
-
-                            Divider(color: Colors.black12, height: 1.h),
-                          ],
-                        ),
+                            },
+                            retrait: retrait,
+                            totalProduits: totalProduits,
+                          ),
+                          
+                        ],
                       );
                     },
                   );

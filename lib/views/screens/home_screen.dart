@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'; // 👈
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pv_deme/api/Service/merchant_stat_controller.dart';
 import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/api/controllers/network_controller.dart';
 import 'package:pv_deme/api/models/retrait_history_model.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
-import 'package:pv_deme/views/widget/elevated_button_with_icons.dart';
+import 'package:pv_deme/views/widget/created_elevated_button.dart';
+import 'package:pv_deme/views/widget/curved_container_widget.dart';
 import 'package:pv_deme/views/widget/phone_entry_bottom_sheet.dart';
+import 'package:pv_deme/views/widget/transaction_item.dart';
+import 'package:pv_deme/views/widget/user_account_data_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,21 +26,24 @@ class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.put(HomeController());
 
   bool isrefreshing = false;
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  if (apiController.merchantStat.value == null) {
-    apiController.getMarchandStat();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (apiController.merchantStat.value == null) {
+        apiController.getMarchandStat();
+      }
+    });
+
+    // Écoute la reconnexion
+    final networkController = Get.find<NetworkController>();
+    networkController.onReconnect = () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        apiController.getMarchandStat();
+      });
+    };
   }
-
-  // Écoute la reconnexion
-  final networkController = Get.find<NetworkController>();
-  networkController.onReconnect = () {
-    // Actualise automatiquement les données quand la connexion revient
-    apiController.getMarchandStat();
-  };
-}
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +71,7 @@ void initState() {
             children: [
               _buildUserHeader(merchantStat),
               Positioned(
-                top: 160.h,
+                top: 130.h,
                 left: 0,
                 right: 0,
                 child: Padding(
@@ -84,13 +89,13 @@ void initState() {
                 ),
               ),
               Positioned(
-                top: 400.h,
+                top: 350.h,
                 left: 0,
                 right: 0,
                 child: _buildRetraitSection(context),
               ),
               Positioned(
-                top: 550.h,
+                top: 500.h,
                 left: 0,
                 right: 0,
                 child: _buildLastWithdrawalSection(merchantStat),
@@ -103,52 +108,10 @@ void initState() {
   }
 
   Widget _buildUserHeader(merchantStat) {
-    return Container(
-      height: 205.h,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16.r),
-          bottomRight: Radius.circular(16.r),
-        ),
-      ),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(50.r),
-              ),
-              child: Icon(Icons.person, size: 45.sp, color: AppColors.primary),
-            ),
-          ),
-          // SizedBox(width: 12.w),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                children: [
-                  TextSpan(
-                    text:
-                        merchantStat != null
-                            ? '${merchantStat.lastname.toUpperCase()} ${merchantStat.firstname}\n'
-                            : 'Utilisateur inconnu\n',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: merchantStat?.phone ?? 'Téléphone indisponible',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+    return CurvedContainer(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 60.h),
+        child: UserAccountDataWidget(merchantStat: merchantStat),
       ),
     );
   }
@@ -163,7 +126,7 @@ void initState() {
           'Statistiques générales',
           style: TextStyle(
             fontSize: 16.sp,
-            color: AppColors.primary,
+            color: Color(0xFF191E28), // Couleur primaire
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -174,18 +137,18 @@ void initState() {
           children: [
             _buildStatCard(
               title: "PV Servis",
-              value: '500',
-              imagePath: 'assets/img/pv.png',
+              value: merchantStat?.customerCount.toString() ?? '0',
+              imagePath: 'assets/icons/people.png',
             ),
             _buildStatCard(
               title: "Approvisionnement",
               value: merchantStat?.supplyCount.toString() ?? '0',
-              imagePath: 'assets/img/appro.png',
+              imagePath: 'assets/icons/transit.png',
             ),
             _buildStatCard(
               title: "Retrait du mois",
               value: merchantStat?.withdrawalCount.toString() ?? '0',
-              imagePath: 'assets/img/scan.png',
+              imagePath: 'assets/icons/scann.png',
             ),
           ],
         ),
@@ -221,7 +184,7 @@ void initState() {
           title,
           style: TextStyle(
             fontSize: 12.sp,
-            color: AppColors.primary,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -250,51 +213,37 @@ void initState() {
             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
           ),
         ),
+
         Container(
-          width: Get.width,
           color: AppColors.primaryLight,
           child: Padding(
             padding: EdgeInsets.all(12.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SizedBox(
-                  width: 170.w,
-                  height: 50.h,
-                  child: CustomElevatedButonWithIcons(
-                    label: "Scanner",
-                    icon: Icons.qr_code_scanner,
-                    iconColor: Colors.yellow,
-                    onPressed: () => Get.toNamed(AppRoutes.scan),
-                    backgroundColor: Colors.green[900]!,
-                    labelColor: Colors.yellow,
-                  ),
+                CreatedElevatedButton(
+                  text: "Scanner",
+                  imagePath: 'assets/icons/scann.png',
+                  onPressed: () => Get.toNamed(AppRoutes.scan),
                 ),
-                SizedBox(
-                  width: 170.w,
-                  height: 50.h,
-                  child: CustomElevatedButonWithIcons(
-                    label: "Saisir",
-                    icon: Icons.person,
-                    iconColor: Colors.yellow,
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20.r),
-                          ),
+                CreatedElevatedButton(
+                  text: "Saisir",
+                  imagePath: 'assets/icons/phone.png',
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20.r),
                         ),
-                        builder:
-                            (context) => PhoneEntryBottomSheet(
-                              showLoadingIndicator: false,
-                            ),
-                      );
-                    },
-                    backgroundColor: Colors.green[900]!,
-                    labelColor: Colors.yellow,
-                  ),
+                      ),
+                      builder:
+                          (context) => PhoneEntryBottomSheet(
+                            showLoadingIndicator: false,
+                          ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -343,7 +292,7 @@ void initState() {
 
           // 🟢 Hauteur fixe pour activer le scroll interne
           SizedBox(
-            height: 220.h, // ajuste selon ce que tu veux afficher
+            height: 180.h, // ajuste selon ce que tu veux afficher
             child: Obx(() {
               if (apiController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
@@ -368,7 +317,10 @@ void initState() {
                     (sum, p) => sum + p.qte,
                   );
 
-                  return _buildTransactionItem(retrait, totalProduits);
+                  return TransactionItemWidget(
+                    retrait: retrait,
+                    totalProduits: totalProduits,
+                  );
                 },
               );
             }),
@@ -378,72 +330,5 @@ void initState() {
     );
   }
 
-  Widget _buildTransactionItem(RetraitHistoryModel retrait, int totalProduits) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 40.w,
-                height: 40.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryLight,
-                  border: Border.all(color: AppColors.primary),
-                ),
-                child: Icon(
-                  Icons.shopping_cart,
-                  color: AppColors.primary,
-                  size: 20.sp,
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      retrait.clientName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      'N° ${retrait.pdi.identifier}',
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
-                    Text(
-                      'Qté produits : $totalProduits',
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Date du retrait',
-                    style: TextStyle(fontSize: 11.sp, color: Colors.black54),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    DateFormat('dd/MM/yyyy').format(retrait.date),
-                    style: TextStyle(fontSize: 12.sp),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Divider(color: Colors.black12, height: 1.h),
-      ],
-    );
-  }
+  //
 }

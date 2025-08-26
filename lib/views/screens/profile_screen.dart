@@ -9,7 +9,8 @@ import 'package:pv_deme/api/models/contact_info_model.dart';
 import 'package:pv_deme/constant/app_color.dart';
 import 'package:pv_deme/routes/app_routes.dart';
 import 'package:pv_deme/views/widget/custom_circle_progress_bar.dart';
-import 'package:pv_deme/views/widget/custom_outlined_button_withIcons.dart';
+import 'package:pv_deme/views/widget/custom_outlined_button_with_icons.dart';
+import 'package:pv_deme/views/widget/user_account_data_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -63,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final merchant = apiController.merchantStat.value;
+    final merchantStat = apiController.merchantStat.value;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -93,52 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(height: 18.h),
                 Padding(
                   padding: EdgeInsets.all(8.h),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.h),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryLight,
-                            borderRadius: BorderRadius.circular(50.r),
-                          ),
-                          child: Icon(
-                            Icons.person,
-                            size: 45.sp,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                      // SizedBox(width: 12.w),
-                      Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                            ),
-                            children: [
-                              TextSpan(
-                                text:
-                                    merchant != null
-                                        ? '${merchant.lastname.toUpperCase()} ${merchant.firstname}\n'
-                                        : 'Utilisateur inconnu\n',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextSpan(
-                                text:
-                                    merchant?.phone ?? 'Téléphone indisponible',
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: UserAccountDataWidget(merchantStat: merchantStat),
                 ),
               ],
             ),

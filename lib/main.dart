@@ -15,34 +15,29 @@ import 'package:pv_deme/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   Get.put(NetworkController()); 
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  Get.put(NetworkController());
   await GetStorage.init();
-  
   Get.put(TokenDataController());
   Get.put(MerchantController());
+  Get.put(ApiController());
+  DependancyInjection.init();
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor:
-          Colors.transparent, // rend la barre de statut transparente
-      statusBarIconBrightness:
-          Brightness.dark, // ou Brightness.light selon ton fond
-      systemNavigationBarColor: Colors.white, // optionnel : barre en bas
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
-  Get.put(ApiController());
-  runApp(
-    ScreenUtilInit(
-      designSize: Size(375, 812), // ton design de référence (iPhone 11 par ex)
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) => MyApp(),
-    ),
-  );
-    DependancyInjection.init();
-
-  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -50,22 +45,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'PV Dêmê',
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('fr', 'FR')],
-      locale: const Locale('fr', 'FR'),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      initialRoute: AppRoutes.splash,
-      getPages: AppNavigation.routes,
-      debugShowCheckedModeBanner: false,
+    
+    return ScreenUtilInit(
+      designSize: Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          title: 'PV Dêmê',
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('fr', 'FR')],
+          locale: const Locale('fr', 'FR'),
+          theme: ThemeData(
+            fontFamily: 'Inter',
+            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+            scaffoldBackgroundColor: Colors.white,
+          ),
+          initialRoute: AppRoutes.splash,
+          getPages: AppNavigation.routes,
+        );
+      },
     );
   }
 }
