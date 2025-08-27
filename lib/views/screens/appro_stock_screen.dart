@@ -22,21 +22,19 @@ class _StockAndApproViewState extends State<StockAndApproView> {
   @override
   void initState() {
     super.initState();
-    if(apiController.marchandFilteredStocks.isEmpty) {
+    if (apiController.marchandFilteredStocks.isEmpty) {
       apiController.getMarchandStock();
-      
     }
-    if(apiController.marchandFilteredAppro.isEmpty) {
+    if (apiController.marchandFilteredAppro.isEmpty) {
       apiController.getMarchandAppro();
     }
-     // Écoute la reconnexion
-  final networkController = Get.find<NetworkController>();
-  networkController.onReconnect = () {
-    // Actualise automatiquement les données quand la connexion revient
-    apiController.getMarchandStock();
-    apiController.getMarchandAppro();
-  };
-    
+    // Écoute la reconnexion
+    final networkController = Get.find<NetworkController>();
+    networkController.onReconnect = () {
+      // Actualise automatiquement les données quand la connexion revient
+      apiController.getMarchandStock();
+      apiController.getMarchandAppro();
+    };
   }
 
   @override
@@ -288,8 +286,9 @@ class _StockAndApproViewState extends State<StockAndApproView> {
                 title: Text(
                   'Approvisionnement',
                   style: TextStyle(
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
+                    fontSize: 13.sp,
                   ),
                 ),
                 subtitle: Text(

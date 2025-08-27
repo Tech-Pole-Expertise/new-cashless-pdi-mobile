@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildUserHeader(merchantStat),
               Positioned(
-                top: 130.h,
+                top: 120.h,
                 left: 0,
                 right: 0,
                 child: Padding(
@@ -89,13 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Positioned(
-                top: 350.h,
+                top: 340.h,
                 left: 0,
                 right: 0,
                 child: _buildRetraitSection(context),
               ),
               Positioned(
-                top: 500.h,
+                top: 460.h,
                 left: 0,
                 right: 0,
                 child: _buildLastWithdrawalSection(merchantStat),
