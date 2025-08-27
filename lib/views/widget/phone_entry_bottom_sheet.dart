@@ -88,28 +88,37 @@ class _PhoneEntryBottomSheetState extends State<PhoneEntryBottomSheet> {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                Obx(
-                  () => CustomElevatedButton(
-                    label: 'Rechercher',
-                    labelColor: Colors.yellow,
-                    isLoading: apiController.isLoading.value,
-                    showLoadingIndicator: widget.showLoadingIndicator,
-                    onPressed: () async {
-                      if (!_formKey.currentState!.validate()) return;
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 8.w,
+                    right: 8.w,
+                    bottom: 40.h,
+                    top: 8.h,
+                  ),
 
-                      final success = await apiController.getPdiProfile(
-                        '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
-                      );
-                      if (success) {
-                        // Get.back();
+                  child: Obx(
+                    () => CustomElevatedButton(
+                      label: 'Rechercher',
+                      labelColor: Colors.yellow,
+                      isLoading: apiController.isLoading.value,
+                      showLoadingIndicator: widget.showLoadingIndicator,
+                      onPressed: () async {
+                        if (!_formKey.currentState!.validate()) return;
 
-                        Get.toNamed(
-                          AppRoutes.panier,
-                          arguments: {'pdi': apiController.pdiProfile.value},
+                        final success = await apiController.getPdiProfile(
+                          '+226${pdiPhoneController.text.replaceAll(' ', '').trim()}',
                         );
-                      }
-                    },
-                    backgroundColor: AppColors.primary,
+                        if (success) {
+                          // Get.back();
+
+                          Get.toNamed(
+                            AppRoutes.panier,
+                            arguments: {'pdi': apiController.pdiProfile.value},
+                          );
+                        }
+                      },
+                      backgroundColor: AppColors.primary,
+                    ),
                   ),
                 ),
               ],

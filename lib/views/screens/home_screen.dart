@@ -71,31 +71,31 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildUserHeader(merchantStat),
               Positioned(
-                top: 120.h,
+                top: 130.h,
                 left: 0,
                 right: 0,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Container(
                     width: 390.w,
-                    height: 225.h,
+                    height: 195.h,
                     padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
                       color: AppColors.secondary,
                       borderRadius: BorderRadius.all(Radius.circular(10.r)),
                     ),
-                    child: _buildStatsCards(merchantStat),
+                    child: _buildStatsSection(merchantStat),
                   ),
                 ),
               ),
               Positioned(
-                top: 340.h,
+                top: 320.h,
                 left: 0,
                 right: 0,
                 child: _buildRetraitSection(context),
               ),
               Positioned(
-                top: 460.h,
+                top: 445.h,
                 left: 0,
                 right: 0,
                 child: _buildLastWithdrawalSection(merchantStat),
@@ -110,13 +110,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildUserHeader(merchantStat) {
     return CurvedContainer(
       child: Padding(
-        padding: EdgeInsets.only(bottom: 60.h),
+        padding: EdgeInsets.only(bottom: 80.h),
         child: UserAccountDataWidget(merchantStat: merchantStat),
       ),
     );
   }
 
-  Widget _buildStatsCards(merchantStat) {
+  Widget _buildStatsSection(merchantStat) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,

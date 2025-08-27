@@ -103,7 +103,6 @@ class _PanierScreenState extends State<PanierScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20.h),
                     Expanded(
                       child: ListView.builder(
                         itemCount: panierProduits.length,
@@ -118,19 +117,11 @@ class _PanierScreenState extends State<PanierScreen> {
                                 vertical: 6.h,
                                 horizontal: 12.w,
                               ),
-                              leading: Container(
-                                width: 40.w,
-                                height: 40.w,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: AppColors.primary),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(6.w),
-                                  child: Image.asset(
-                                    'assets/img/fruit.png',
-                                    fit: BoxFit.contain,
-                                  ),
+                              leading: Padding(
+                                padding: EdgeInsets.all(6.w),
+                                child: Image.asset(
+                                  'assets/img/fruit.png',
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                               title: Text(
@@ -199,40 +190,32 @@ class _PanierScreenState extends State<PanierScreen> {
                         ),
                       ),
                     Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: Obx(() {
-                        return CustomElevatedButton(
-                          label:
-                              apiController.isLoading.value
-                                  ? "Traitement en cours..."
-                                  : "Confirmer le retrait",
-                          labelColor: Colors.yellow,
-                          isLoading: apiController.isLoading.value,
-                          onPressed:
-                              apiController.isLoading.value
-                                  ? null
-                                  : () async {
-                                    if (!validatePanier()) return;
-                                    final selection =
-                                        panierProduits
-                                            .where((p) => p.isSelected)
-                                            .toList();
-                                    final retraitList =
-                                        selection
-                                            .map((e) => e.toRetraitModel())
-                                            .toList();
-                                    await apiController.initWithdraw({
-                                      'phone': pdi!.phone,
-                                      'produits':
-                                          retraitList
-                                              .map((e) => e.toJson())
-                                              .toList(),
-                                    });
-                                  },
-                          backgroundColor: AppColors.primary,
-                        );
-                      }),
-                    ),
+  padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 32.h, top: 8.h),
+  child: Obx(() {
+    return CustomElevatedButton(
+      label: apiController.isLoading.value
+          ? "Traitement en cours..."
+          : "Confirmer le retrait",
+      labelColor: Colors.yellow,
+      isLoading: apiController.isLoading.value,
+      onPressed: apiController.isLoading.value
+          ? null
+          : () async {
+              if (!validatePanier()) return;
+              final selection =
+                  panierProduits.where((p) => p.isSelected).toList();
+              final retraitList =
+                  selection.map((e) => e.toRetraitModel()).toList();
+              await apiController.initWithdraw({
+                'phone': pdi!.phone,
+                'produits': retraitList.map((e) => e.toJson()).toList(),
+              });
+            },
+      backgroundColor: AppColors.primary,
+    );
+  }),
+),
+
                   ],
                 ),
               ),
