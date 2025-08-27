@@ -1,0 +1,12 @@
+
+#Mettre à jour la branche main avec la branche responsive dans l’ancien dépôt
+git checkout main
+git pull origin main          # récupérer les dernières modifs du main distant
+git merge responsive          # fusionner responsive dans main
+# Résoudre les conflits si nécessaire
+git commit -m "Merge responsive into main"  # si git te demande un commit
+git push origin main          # envoyer sur l'ancien dépôt
+
+#Pousser sur le nouveau dépôt
+git push new-origin main --force
+

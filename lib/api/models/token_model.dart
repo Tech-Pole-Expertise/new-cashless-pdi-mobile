@@ -1,28 +1,28 @@
 class TokenModel {
   final String token;
-  final String refreshToken;
+  final String refresh;
 
   TokenModel({
     required this.token,
-    required this.refreshToken,
+    required this.refresh,
   });
 
 
 factory TokenModel.fromJson(Map<String, dynamic> json) {
     return TokenModel(
-      token: json['token'] as String,
-      refreshToken: json['refreshToken'] as String,
+      token: json['access'] as String,
+      refresh: json['refresh'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'token': token,
-      'refreshToken': refreshToken,
+      'access': token,
+      'refresh': refresh,
     };
   }
   @override
   String toString() {
-    return 'TokenModel(token: $token, refreshToken: $refreshToken)';
+    return 'TokenModel(access: $token, refresh: $refresh)';
   }
 }

@@ -42,7 +42,6 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          SizedBox(height: 14.h),
           CustomOtpField(
             operationType: operationType,
             key: otpFieldKey,
@@ -61,7 +60,7 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
               isCompleted.value = code.length == 6;
             },
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 8.h),
           Obx(
             () =>
                 isCompleted.value
@@ -103,7 +102,6 @@ class VerifyOtpForPasswordScreen extends StatelessWidget {
                     )
                     : const SizedBox.shrink(),
           ),
-         
         ],
       ),
     );

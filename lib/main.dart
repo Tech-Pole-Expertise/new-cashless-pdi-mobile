@@ -46,30 +46,34 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    return ScreenUtilInit(
-      designSize: Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return GetMaterialApp(
-          title: 'PV Dêmê',
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('fr', 'FR')],
-          locale: const Locale('fr', 'FR'),
-          theme: ThemeData(
-            fontFamily: 'Inter',
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-            scaffoldBackgroundColor: Colors.white,
-          ),
-          initialRoute: AppRoutes.splash,
-          getPages: AppNavigation.routes,
-        );
-      },
-    );
+  return ScreenUtilInit(
+  designSize: const Size(430, 932),
+  minTextAdapt: true,
+  splitScreenMode: true,
+  builder: (_, __) => GetMaterialApp(
+    title: 'PV Dêmê',
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('fr', 'FR')],
+    locale: const Locale('fr', 'FR'),
+    theme: ThemeData(
+      fontFamily: 'Inter',
+      colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+      scaffoldBackgroundColor: Colors.white,
+    ),
+    initialRoute: AppRoutes.splash,
+    getPages: AppNavigation.routes,
+    // 👇 très important
+    builder: (context, child) {
+      ScreenUtil.init(context);
+      return child!;
+    },
+  ),
+);
+
   }
 }

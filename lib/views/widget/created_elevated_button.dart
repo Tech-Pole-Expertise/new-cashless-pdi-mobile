@@ -19,7 +19,7 @@ class CreatedElevatedButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: 160.w,
-        height: 50.h,
+        height: 45.h,
         decoration: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(1000.r),

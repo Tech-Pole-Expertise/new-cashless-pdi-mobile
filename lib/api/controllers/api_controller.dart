@@ -96,8 +96,8 @@ class ApiController extends GetxController {
         final merchantController = Get.find<MerchantController>();
         final tokenController = Get.find<TokenDataController>();
         final Map<String, dynamic> tokenData = {
-          'token': data['access'],
-          'refreshToken': data['refresh'],
+          'access': data['access'],
+          'refresh': data['refresh'],
         };
         tokenController.saveToken(TokenModel.fromJson(tokenData));
         merchantController.saveMerchant(merchant);
@@ -750,7 +750,7 @@ class ApiController extends GetxController {
       final tokenController = Get.find<TokenDataController>();
       final token = tokenController.getToken();
       final response = await _apiProvider.refreshToken({
-        'refresh': token!.refreshToken.toString(),
+        'refresh': token!.refresh.toString(),
       });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

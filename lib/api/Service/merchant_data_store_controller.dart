@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/Service/merchand_data_store_provider.dart';
 import 'package:pv_deme/api/models/merchand_model.dart';
@@ -26,8 +27,8 @@ class MerchantController extends GetxController {
   }
 
   void logout() {
-    _merchandDataStore.clearUserData();
-    merchant.value = null;
+    GetStorage().erase();
+    Logger().d('All data cleared on logout');
     Get.offAllNamed(AppRoutes.login);
   }
 }

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:pv_deme/api/Service/merchant_data_store_controller.dart';
 import 'package:pv_deme/api/Service/token_data_controller.dart';
+import 'package:pv_deme/api/controllers/api_controller.dart';
 import 'package:pv_deme/api/models/token_model.dart';
 import 'package:pv_deme/api/providers/api_provider.dart';
 import 'package:pv_deme/views/widget/custom_snack_bar.dart';
@@ -22,6 +23,7 @@ class CustomHttpClient {
   CustomHttpClient() {
     _merchantController = Get.find<MerchantController>();
     _tokenDataController = Get.find<TokenDataController>();
+    
   }
   Future<Map<String, String>> _getHeaders({bool authRequired = false}) async {
     final headers = {
@@ -71,8 +73,9 @@ class CustomHttpClient {
     try {
       final tokenController = Get.find<TokenDataController>();
       final token = tokenController.getToken();
+      Logger().d('refresh token value : ${token?.refresh}');
       final response = await ApiProvider().refreshToken({
-        'refresh': token!.refreshToken.toString(),
+        'refresh': token!.refresh.toString(),
       });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
